@@ -1,7 +1,7 @@
 <template>
     <el-sub-menu index="5">
         <template #title>
-            <Avatar></Avatar>
+            <UserAvatar></UserAvatar>
         </template>
         <el-menu-item index="/user">
             <el-icon>
@@ -25,15 +25,16 @@
 </template>
 
 <script setup>
-import { inject } from 'vue'
+// import { inject } from 'vue'
+import UserAvatar from './UserAvatar.vue';
 import { Close, User, Setting } from '@element-plus/icons-vue'
-import Avatar from "./Avatar.vue";
-
-const isLogged = inject("isLogged")
+import { ElMessage } from 'element-plus';
+import useLoginStore from '../../../store/loginStore';
+const store = useLoginStore()
+// const isLogged = inject("isLogged")
 const handleExit = () => {
-    isLogged.value = false
+    // isLogged.value = false
+    store.isLogged = false
+    ElMessage.error("退出登录")
 }
 </script>
-
-<style scoped>
-</style>

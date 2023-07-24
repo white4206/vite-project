@@ -22,6 +22,3 @@
 import { More, User } from '@element-plus/icons-vue'
 import Avatar from "./Avatar.vue";
 </script>
-
-<style scoped>
-</style>

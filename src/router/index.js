@@ -1,49 +1,38 @@
 import { createRouter, createWebHashHistory } from "vue-router";
-import LoginLayout from "../layout/LoginLayout/LoginLayout.vue";
-import Home from "../views/home/Home.vue";
-import SystemNotice from "../views/notice/SystemNotice.vue";
-import UserCenter from "../views/user/UserCenter.vue";
-import CompetitionDetails from "../views/competition/CompetitionDetails.vue";
 import NotFound from "../components/NotFound/NotFound.vue";
-import Created from "../layout/UserCenterLayout/components/Created.vue";
-import Joined from "../layout/UserCenterLayout/components/Joined.vue";
-import Message from "../layout/UserCenterLayout/components/Message.vue";
-import Information from "../layout/UserCenterLayout/components/Information.vue";
-import CompetitionDetailLayout from "../layout/CompetitionDetailsLayout/competitionDetailsLayout.vue";
-import Details from "../layout/CompetitionDetailsLayout/components/Details.vue";
 
 const routes = [
   {
     path: "/login",
-    component: LoginLayout,
+    component: () => import("../views/login/index.vue"),
   },
   {
     path: "/home",
-    component: Home,
+    component: () => import("../views/home/index.vue"),
   },
   {
     path: "/notice",
-    component: SystemNotice,
+    component: () => import("../views/notice/index.vue"),
   },
   {
     path: "/user",
-    component: UserCenter,
+    component: () => import("../views/user/index.vue"),
     children: [
       {
         path: "created",
-        component: Created,
+        component: () => import("../views/user/created/index.vue"),
       },
       {
         path: "joined",
-        component: Joined,
+        component: () => import("../views/user/joined/index.vue"),
       },
       {
         path: "message",
-        component: Message,
+        component: () => import("../views/user/message/index.vue"),
       },
       {
         path: "information",
-        component: Information,
+        component: () => import("../views/user/information/index.vue"),
       },
       {
         path: "/user",
@@ -53,15 +42,16 @@ const routes = [
   },
   {
     path: "/competition",
-    component: CompetitionDetails,
+    component: () => import("../views/competition/index.vue"),
     children: [
       {
         path: "totalCompetitions",
-        component: CompetitionDetailLayout,
+        component: () =>
+          import("../views/competition/components/TotalCompetitions.vue"),
       },
       {
         path: "details/:Cid",
-        component: Details,
+        component: () => import("../views/competition/components/Details.vue"),
       },
       {
         path: "/competition",
@@ -84,10 +74,10 @@ const router = createRouter({
 });
 router.beforeEach(async (to, from, next) => {
   let isAuthenticated = await localStorage.getItem("loginToken");
-    if (to.path !== "/login" && isAuthenticated !== "successful login")
-      next({
-        path: "/login",
-      });
-    else next();
-  });
+  if (to.path !== "/login" && isAuthenticated !== "successful login")
+    next({
+      path: "/login",
+    });
+  else next();
+});
 export default router;

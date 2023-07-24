@@ -13,11 +13,8 @@
 
 <script setup>
 import Navbar from "./components/Navbar/Navbar.vue"
-import { provide, ref } from 'vue'
+// import { provide, ref } from 'vue'
 
-const isLogged = ref(false)
-provide('isLogged', isLogged)
+// const isLogged = ref(false)
+// provide('isLogged', isLogged)
 </script>
-
-<style scoped>
-</style>

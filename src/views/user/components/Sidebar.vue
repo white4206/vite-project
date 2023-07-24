@@ -40,6 +40,3 @@ const defaultActive = computed(() => {
 })
 import { ElMenuItemGroup } from 'element-plus';
 </script>
-
-<style scoped>
-</style>
