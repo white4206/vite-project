@@ -1,13 +1,51 @@
 <template>
-    <div class="block text-center" m="t-4">
-        <el-carousel trigger="click" height="200px">
-            <el-carousel-item v-for="item in 4" :key="item">
-                <h3 class="small justify-center" text="2xl">{{ item }}</h3>
-            </el-carousel-item>
-        </el-carousel>
-    </div>
+    <el-carousel trigger="click" v-loading="loading" height="200px">
+        <el-carousel-item v-for="(item, index) in imageList" :key="item.id" style="text-align: center">
+            <img :src="item.url" :alt="item.name" style="height: 200px;width: 100%;">
+        </el-carousel-item>
+    </el-carousel>
 </template>
-  
+
+<script lang="ts" setup>
+import { ref, onMounted } from 'vue'
+const imageList = ref<{
+    name: string,
+    url: string,
+    id: number,
+    [propsName: string]: any
+}[]>([])
+const loading = ref<boolean>(true)
+var timer: number
+onMounted(() => {
+    timer = setInterval(() => {
+        imageList.value = [
+            {
+                name: "不忘初心",
+                url: "https://jsj.suse.edu.cn/_rest/linker_allfile.ashx?parr=news%2c637484178485721070%2c.jpg%2c0%2c0%2c202307261010%2cc3db589b01fcd445f831272f04e35933&said=636059516973492676",
+                id: 1
+            },
+            {
+                name: "宜宾校区",
+                url: "https://jsj.suse.edu.cn/_rest/linker_allfile.ashx?parr=news%2c637285245472948593%2c.png%2c0%2c0%2c202307261010%2cc3db589b01fcd445f831272f04e35933&said=636059516973492676",
+                id: 2
+            },
+            {
+                name: "宜宾校区",
+                url: "https://www.suse.edu.cn/_rest/linker_allfile.ashx?parr=news%2c636735607532505026%2c.jpg%2c0%2c0%2c202307251615%2cc2248ebc34fa7df12e0bc0ef9bfe5469&said=636122975317834394",
+                id: 3
+            },
+            {
+                name: "黄岭校区",
+                url: "https://www.suse.edu.cn/_rest/linker_allfile.ashx?parr=news%2c637979944710583838%2c.jpg%2c0%2c0%2c202307251615%2cc2248ebc34fa7df12e0bc0ef9bfe5469&said=636122975317834394",
+                id: 4
+            }
+        ]
+        loading.value = false
+        clearInterval(timer)
+    }, 1000)
+})
+</script>
+
 <style lang="scss" scoped>
 .demonstration {
     color: var(--el-text-color-secondary);

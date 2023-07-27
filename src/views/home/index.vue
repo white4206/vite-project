@@ -9,19 +9,20 @@
     <el-row justify="space-around">
         <el-col :span="8" :push="1">
             <div class="grid-content">
-                <Table></Table>
+                <LeftTable></LeftTable>
             </div>
         </el-col>
         <el-col :span="8" :pull="1">
             <div class="grid-content">
-                <Table></Table>
+                <RightTable></RightTable>
             </div>
         </el-col>
     </el-row>
 </template>
  
 <script setup>
-import Table from './components/Table.vue'
+import LeftTable from './components/LeftTable.vue'
+import RightTable from './components/RightTable.vue'
 import Swiper from './components/Swiper.vue';
 </script>
 <style lang="scss" scoped>
@@ -40,14 +41,6 @@ import Swiper from './components/Swiper.vue';
 .grid-content {
     border-radius: 4px;
     min-height: 36px;
-}
-
-.el-col:nth-child(2n+1) {
-    background-color: rgb(199, 213, 218);
-}
-
-.el-col:nth-child(2n) {
-    background-color: rgb(66, 70, 71);
 }
 </style>
   

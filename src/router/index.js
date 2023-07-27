@@ -13,6 +13,12 @@ const routes = [
   {
     path: "/notice",
     component: () => import("../views/notice/index.vue"),
+    children: [
+      {
+        path: ":Nid",
+        component: () => import("../views/notice/index.vue"),
+      },
+    ],
   },
   {
     path: "/user",
@@ -55,6 +61,10 @@ const routes = [
       },
       {
         path: "/competition",
+        redirect: "/competition/totalCompetitions",
+      },
+      {
+        path: "/competition/:temp",
         redirect: "/competition/totalCompetitions",
       },
     ],

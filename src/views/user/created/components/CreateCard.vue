@@ -6,7 +6,7 @@
             </el-icon>
         </div>
         <div>
-            创建项目
+            创建团队
         </div>
     </el-card>
 </template>

@@ -14,3 +14,10 @@ const goBack = () => {
   router.back()
 }
 </script>
+
+<style lang="scss">
+.el-page-header:hover {
+  transform: translateX(-10px);
+  transition: 0.4s;
+}
+</style>
