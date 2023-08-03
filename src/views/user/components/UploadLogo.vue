@@ -44,8 +44,7 @@ const props = defineProps({
     },
     fileList: {
         type: Object
-    },
-    test: Number
+    }
 })
 const imageUrl = ref('')
 const uploadRef = ref()
@@ -89,7 +88,7 @@ const handleChange: UploadProps['onChange'] = (rawFile, rawFileList) => {
 
     //选用
     // fileList.value = rawFileList
-    if (rawFile.raw?.type !== 'image/jpeg' && rawFile.raw?.type !== 'image/png') {
+    if (rawFile.raw?.type !== 'image/jpeg' && rawFile.raw?.type !== 'image/png'&&rawFile.raw?.type!=='image/gif') {
         ElMessage.error('logo图片格式必须是JPG、PNG、GIF')
         uploadRef.value.clearFiles()
         return

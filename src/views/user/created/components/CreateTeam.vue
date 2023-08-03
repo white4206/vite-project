@@ -37,10 +37,10 @@
 </template>
 
 <script lang="ts" setup>
-import UploadLogo from './UploadLogo.vue'
+import UploadLogo from '../../components/UploadLogo.vue'
 import { ref, reactive } from 'vue'
 import { ElMessage } from 'element-plus'
-import type { FormInstance} from 'element-plus'
+import type { FormInstance } from 'element-plus'
 import axios from 'axios'
 //表单校验
 const logoValidator = (rule: any, value: any, callback: any) => {
@@ -70,26 +70,30 @@ const form = reactive<RuleForm>({
 const submitForm = (formEl: FormInstance | undefined) => {
     // if (JSON.stringify(form) !== '{"name":"","logo":"","desc":""}') {
     formEl?.validate().then(res => {
-        axios.get(`http://localhost:3000/users?username=stu12345678`)
+        axios.get(`http://localhost:3000/students?studentNumber=stu12345678`)
             .then(res => {
-                let leader = {
-                    name: res.data[0].name,
-                    major: res.data[0].major
-                }
                 emit("isShow")
                 axios.post("http://localhost:3000/teams", {
                     name: form.name,
                     desc: form.desc,
                     // logoURL: base64.value
                     logo: form.logo,
-                    leader: leader
+                    leader: res.data[0],
+                    member:[],
+                    teacher:{}
                 })
                     .then(res => {
                         emit('getNewData', 'AddNewTeam')
                         formEl?.resetFields()
                     })
-                    .catch(err => console.log(err))
-            }).catch(err => console.log(err))
+                    .catch(err => {
+                        console.error(err)
+                        ElMessage.error(err)
+                    })
+            }).catch(err => {
+                console.error(err)
+                ElMessage.error(err)
+            })
     }).catch(err => {
         ElMessage.error("请正确填写团队信息")
     })

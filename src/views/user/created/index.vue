@@ -1,6 +1,6 @@
 <template>
     <!-- <CreateProject></CreateProject> -->
-    <div class="created-box" v-loading="loading">
+    <div class="teamCard-box" v-loading="loading">
         <template v-for="(item, index) in teamData" :key="item.id">
             <TeamCard :data="item" :id="item.id" @getNewData="handleGet">
             </TeamCard>
@@ -39,7 +39,7 @@
 
 <script lang="ts" setup>
 import { ElMessage } from 'element-plus'
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, provide } from 'vue'
 import CreateCard from './components/CreateCard.vue';
 import TeamCard from './components/TeamCard.vue';
 import { Close } from '@element-plus/icons-vue'
@@ -53,30 +53,40 @@ interface iTeamData {
     id: number,
     [propsName: string]: any
 }
-const teamData = ref<iTeamData[]>()
-const getData = (message = '') => {
+const teamData = ref<iTeamData[]>([])
+const getData = (msg = '') => {
+    loading.value = true
     setTimeout(() => {
         axios.get(`http://localhost:3000/teams`)
             .then(res => {
-                teamData.value = res.data
+                console.log(res.data)
+                teamData.value = []
+                res.data.map(item => {
+                    if (item.leader.studentNumber === "stu12345678")
+                        teamData.value?.push(item)
+                })
                 loading.value = false
-                if (message === 'delete')
+                if (msg === 'delete')
                     ElMessage.success("删除成功")
-                else if (message === 'AddNewTeam') {
+                else if (msg === 'AddNewTeam') {
                     ElMessage.success("创建成功")
                 }
-                else if (message === 'EditTeam')
+                else if (msg === 'EditTeam')
                     ElMessage.success("编辑成功")
+
             })
-            .catch(err => console.log(err))
+            .catch(err => {
+                console.error(err)
+                ElMessage.error(err)
+            })
     }, 1000)
 }
 onMounted(() => {
     getData()
 })
-const handleGet = (message) => {
-    loading.value = true
-    getData(message)
+const handleGet = (msg) => {
+    // loading.value = true
+    getData(msg)
 }
 const dialogTableVisible = ref(false)
 const isCreate = ref(false)
@@ -87,10 +97,11 @@ const handleCreate = () => {
 const handleShow = () => {
     isCreate.value = false
 }
+provide("getData", getData)
 </script>
 
 <style lang="scss" scoped>
-.created-box {
+.teamCard-box {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;

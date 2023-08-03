@@ -17,6 +17,7 @@
 <script setup>
 import RightSkeleton from './RightSkeleton.vue'
 import { ref, onMounted, onBeforeMount } from 'vue'
+import { ElMessage } from 'element-plus'
 import axios from 'axios'
 import { useRouter } from 'vue-router'
 const tableData = ref([])
@@ -32,7 +33,10 @@ onMounted(() => {
                 tableData.value = res.data
                 loading.value = false
             })
-            .catch(err => console.log(err))
+            .catch(err => {
+                console.error(err)
+                ElMessage.error(err)
+            })
         // let res = await axios.get("http://localhost:3000/notice?_limit=10")
         // tableData.value = res.data
         // console.log(tableData.value)

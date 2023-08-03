@@ -14,7 +14,7 @@
                     </div>
                     <div class="small-text">{{ teamData!.leader.major }}</div>
                 </div>
-                <DropDown :teamData="teamData" :id="id"></DropDown>
+                <ChangeCaptain :teamData="teamData" :id="id"></ChangeCaptain>
             </span>
         </el-card>
         <el-row class="content" :gutter="10" style="margin-top: 10px;">
@@ -34,7 +34,7 @@
                             </div>
                             <div class="small-text">{{ item.major }}</div>
                         </div>
-                        <div class="close-icon" @click="handleDeleteMember(item.id, index)">
+                        <div class="close-icon" @click="handleDeleteMember(item.id)">
                             <el-icon>
                                 <Close />
                             </el-icon>
@@ -47,8 +47,9 @@
 </template>
 
 <script lang="ts" setup>
-import DropDown from './DropDown.vue'
+import ChangeCaptain from './ChangeCaptain.vue'
 import { Close } from '@element-plus/icons-vue'
+import { ElMessage } from 'element-plus'
 import { inject } from 'vue'
 import axios from 'axios'
 
@@ -60,15 +61,32 @@ const props = defineProps({
         type: Number
     }
 })
-const getData: Function | undefined = inject("getData")
-const handleDeleteMember = (id, index) => {
-    axios.patch(`http://localhost:3000/students/${id}`, {
-        team: ""
-    })
+const getTeamData: Function | undefined = inject("getData")
+const handleDeleteMember = (id) => {
+    axios.get(`http://localhost:3000/teams?id=${props.id}`)
         .then(res => {
-            getData!("delete")
+            let rawMember = res.data[0].member
+            rawMember.map((item, index) => {
+                if (item.id === id)
+                    rawMember.splice(index, 1)
+            });
+            console.log(rawMember)
+            axios.patch(`http://localhost:3000/teams/${props.id}`, {
+                member: rawMember
+            })
+                .then(res => {
+                    getTeamData!("Delete")
+                })
+                .catch(err => {
+                    console.error(err)
+                    ElMessage.error(err)
+                })
         })
-        .catch(err => console.log(err))
+        .catch(err => {
+            console.error(err)
+            ElMessage.error(err)
+        })
+
 }
 </script>
 

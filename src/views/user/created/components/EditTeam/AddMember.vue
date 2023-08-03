@@ -17,8 +17,7 @@
                 <span>学号：{{ searchResult!.studentNumber }}</span>
             </p>
             <p>
-                <el-button type="primary" plain style="width: 100%;"
-                    @click="handleConfirm(searchResult!.id)">确认邀请</el-button>
+                <el-button type="primary" plain style="width: 100%;" @click="handleConfirm">确认邀请</el-button>
             </p>
         </div>
     </el-form>
@@ -37,6 +36,9 @@ const props = defineProps({
     },
     teamMember: {
         type: Object
+    },
+    id: {
+        type: Number
     }
 })
 const rules = reactive({
@@ -57,9 +59,9 @@ const searchResult = ref<{
 const handleSearch = (formEl: FormInstance | undefined) => {
     formEl?.validate().then(res => {
         isSuccess.value = false
-        axios.get(`http://localhost:3000/users?username=stu12345678`)
+        axios.get(`http://localhost:3000/students?studentNumber=stu12345678`)
             .then(res => {
-                let userStudentNumber = res.data[0].username
+                let userStudentNumber = res.data[0].studentNumber
                 axios.get(`http://localhost:3000/students?studentNumber=${form.studentNumber}&name=${form.name}`)
                     .then(res => {
                         if (res.data.length === 0) ElMessage.error("未找到用户，请确认信息无误")
@@ -74,22 +76,42 @@ const handleSearch = (formEl: FormInstance | undefined) => {
                             else isSuccess.value = true
                         }
                     })
-                    .catch(err => console.log(err))
-            }).catch(err => console.log(err))
+                    .catch(err => {
+                        console.error(err)
+                        ElMessage.error(err)
+                    })
+            }).catch(err => {
+                console.error(err)
+                ElMessage.error(err)
+            })
 
     }).catch(err => {
         ElMessage.error("请正确填写用户信息")
     })
 }
-const getData: Function | undefined = inject("getData")
-const handleConfirm = (id) => {
-    axios.patch(`http://localhost:3000/students/${id}`, {
-        team: props.teamName
-    })
+const getTeamData: Function | undefined = inject("getData")
+const handleConfirm = () => {
+    axios.get(`http://localhost:3000/teams?id=${props.id}`)
         .then(res => {
-            getData!("AddMember")
+            let rawMember = res.data[0].member
+            rawMember.push(searchResult.value)
+            axios.patch(`http://localhost:3000/teams/${props.id}`, {
+                member: rawMember
+            })
+                .then(res => {
+                    getTeamData!("AddMember")
+                    FormRef.value!.resetFields()
+                    isSuccess.value = false
+                })
+                .catch(err => {
+                    console.error(err)
+                    ElMessage.error(err)
+                })
         })
-        .catch(err => console.log(err))
+        .catch(err => {
+            console.error(err)
+            ElMessage.error(err)
+        })
 }
 const handleCancel = (formEl: FormInstance | undefined) => {
     isSuccess.value = false

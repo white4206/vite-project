@@ -35,8 +35,9 @@ const props = defineProps({
         type: Number
     }
 })
-const getData: Function | undefined = inject("getData")
-const handleCommand = (item) => {
+const getTeamData: Function | undefined = inject("getData")
+const resetEditForm: Function | undefined = inject("resetForm")
+const handleCommand = (id) => {
     ElMessageBox.confirm(
         '确认变更团队队长吗？将失去管理团队的权限，变更后不可恢复！',
         '警告',
@@ -47,37 +48,50 @@ const handleCommand = (item) => {
         }
     )
         .then(() => {
-            axios.patch(`http://localhost:3000/students/${item}`, {
-                team: ""
-            })
-                .then(res => { })
-                .catch(err => console.log(err))
-            axios.patch(`http://localhost:3000/students/${props.teamData!.leader.id}`, {
-                team: "Minecraft"
-            })
-                .then(res => { })
-                .catch(err => console.log(err))
-            axios.get(`http://localhost:3000/students?id=${item}`)
+            axios.get(`http://localhost:3000/teams?id=${props.id}`)
+                .then(res => {
+                    let rawMember = res.data[0].member
+                    rawMember.map((item, index) => {
+                        if (item.id === id) {
+                            rawMember.splice(index, 1)
+                            rawMember.push(props.teamData!.leader)
+                        }
+                    })
+                    axios.patch(`http://localhost:3000/teams/${props.id}`, {
+                        member: rawMember
+                    })
+                        .then(res => { })
+                        .catch(err => {
+                            console.error(err)
+                            ElMessage.error(err)
+                        })
+                }).catch(err => {
+                    console.error(err)
+                    ElMessage.error(err)
+                })
+            axios.get(`http://localhost:3000/students?id=${id}`)
                 .then(res => {
                     if (res.data.length !== 0) {
-                        let temp = {
-                            name: res.data[0].name,
-                            major: res.data[0].major,
-                            id: res.data[0].id
-                        }
                         axios.patch(`http://localhost:3000/teams/${props.id}`, {
-                            leader: temp
+                            leader: res.data[0]
                         })
                             .then(res => {
-                                getData!()
+                                getTeamData!()
                                 ElMessage.success("变更队长成功")
+                                resetEditForm!('changeCaptain')
                             })
-                            .catch(err => console.log(err))
+                            .catch(err => {
+                                console.error(err)
+                                ElMessage.error(err)
+                            })
                     }
                 })
-                .catch(err => console.log(err))
+                .catch(err => {
+                    console.error(err)
+                    ElMessage.error(err)
+                })
         })
-        .catch(() => {
+        .catch((err) => {
             ElMessage.info("取消变更")
         })
 }

@@ -23,6 +23,7 @@ import { ref, onMounted } from 'vue'
 // import useNoticeStore from '../../../store/noticeStore';
 // const store = useNoticeStore()
 import axios from 'axios'
+import { ElMessage } from 'element-plus'
 import { useRoute } from 'vue-router'
 const noticeList = ref<{
     title: string
@@ -43,7 +44,10 @@ onMounted(() => {
                 noticeList.value = res.data
                 loading.value = false
             })
-            .catch(err => console.log(err))
+            .catch(err => {
+                console.error(err)
+                ElMessage.error(err)
+            })
         activeNames.value = route.params.Nid
     }, 2000)
     // store.getNoticeList()

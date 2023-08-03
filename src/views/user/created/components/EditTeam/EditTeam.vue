@@ -16,7 +16,7 @@
                                 <el-input v-model="form.name" />
                             </el-form-item>
                             <el-form-item label="团队logo" prop="logoURL">
-                                <UploadLogo :form="form" :file-list="fileList" :test="1"></UploadLogo>
+                                <UploadLogo :form="form" :file-list="fileList"></UploadLogo>
                             </el-form-item>
                             <el-form-item label="团队描述" prop="desc">
                                 <el-input v-model="form.desc" :rows="6" maxlength="100" show-word-limit type="textarea"
@@ -34,16 +34,16 @@
         <template #footer>
             <div class="dialog-footer">
                 <el-button type="primary" @click="submitForm(FormRef)">保存</el-button>
-                <el-button @click="resetForm(FormRef)">取消</el-button>
+                <el-button @click="resetForm">取消</el-button>
             </div>
         </template>
     </el-dialog>
 </template>
 
 <script lang="ts" setup>
-import UploadLogo from '../UploadLogo.vue'
+import UploadLogo from '../../../components/UploadLogo.vue'
 import AddCollapse from './AddCollapse.vue'
-import { ref, reactive, onMounted, provide } from 'vue'
+import { ref, reactive, onMounted, provide, inject } from 'vue'
 import { ElMessage } from 'element-plus'
 import type { FormInstance } from 'element-plus'
 import axios from 'axios'
@@ -63,7 +63,7 @@ const fileList = ref<object[]>([])
 const teamMember = ref()
 const teamTeacher = ref()
 const teamName = ref()
-const getData = (message = '') => {
+const getData = (msg = '') => {
     axios.get(`http://localhost:3000/teams?id=${props.id}`)
         .then(res => {
             teamName.value = form.name = res.data[0].name
@@ -73,31 +73,16 @@ const getData = (message = '') => {
             // imageUrl.value = form.logoURL
             fileList.value = [res.data[0].logo]
             teamData.leader = res.data[0].leader
-            setTimeout(() => {
-                axios.get(`http://localhost:3000/students?team=${res.data[0].name}`)
-                    .then(res => {
-                        teamData.member = res.data
-                        teamMember.value = teamData.member
-                        // console.log(res)
-                        if (message === "delete") ElMessage.success("成员变更成功")
-                        else if (message === "AddMember") ElMessage.success("添加成员成功")
-                    })
-                    .catch(err => console.log(err))
-            }, 1000)
-            setTimeout(() => {
-                axios.get(`http://localhost:3000/teachers?team=${res.data[0].name}`)
-                    .then(res => {
-                        if (res.data.length !== 0) {
-                            teamData.teacher = res.data[0]
-                            teamTeacher.value = teamData.teacher
-                        }
-                        // console.log(res)
-                        if (message === "AddTeacher") ElMessage.success("添加指导老师成功")
-                    })
-                    .catch(err => console.log(err))
-            }, 1000)
+            teamMember.value = teamData.member = res.data[0].member
+            teamTeacher.value = teamData.teacher = res.data[0].teacher
+            if (msg === "Delete") ElMessage.success("成员变更成功")
+            else if (msg === "AddMember") ElMessage.success("添加成员成功")
+            else if (msg === "AddTeacher") ElMessage.success("添加指导老师成功")
         })
-        .catch(err => console.log(err))
+        .catch(err => {
+            console.error(err)
+            ElMessage.error(err)
+        })
 }
 onMounted(() => {
     getData()
@@ -115,7 +100,7 @@ const rules = reactive({
     desc: [{ required: true, message: '请输入团队描述', trigger: 'blur' }, { min: 10, max: 200, message: '内容至少为10位', trigger: 'blur' }]
 })
 //表单
-const emit = defineEmits(['isShow', 'getNewData'])
+const emit = defineEmits(['isShow'])
 interface RuleForm {
     name: string
     logo: any
@@ -127,6 +112,7 @@ const form = reactive<RuleForm>({
     logo: '',
     desc: '',
 })
+const getTeamCardData: Function | undefined = inject("getData")
 const submitForm = (formEl: FormInstance | undefined) => {
     formEl?.validate().then(res => {
         emit("isShow")
@@ -137,19 +123,28 @@ const submitForm = (formEl: FormInstance | undefined) => {
             logo: form.logo
         })
             .then(res => {
-                emit('getNewData', 'EditTeam')
+                getTeamCardData!('EditTeam')
                 getData()
             })
-            .catch(err => console.log(err))
+            .catch(err => {
+                console.error(err)
+                ElMessage.error(err)
+            })
     }).catch(err => {
         ElMessage.error("请正确填写团队信息!")
     })
 }
-function resetForm(formEl: FormInstance | undefined) {
+function resetForm(msg = '') {
     emit("isShow")
     getData()
-    ElMessage.info("取消编辑")
+    if (msg === 'changeCaptain') {
+        ElMessage.warning("您已失去管理权限")
+        getTeamCardData!('changeCaptain')
+    }
+    else if (msg === '')
+        ElMessage.info("取消编辑")
 }
+provide("resetForm", resetForm)
 provide("getData", getData)
 </script>
 

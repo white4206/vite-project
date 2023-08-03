@@ -42,6 +42,7 @@
 import ImgCardSkeleton from './ImgCardSkeleton.vue';
 import { ref, onMounted } from 'vue'
 import axios from 'axios'
+import { ElMessage } from 'element-plus'
 // import useNoticeStore from '../../../store/noticeStore';
 // const store = useNoticeStore()
 const activeNames = ref([''])
@@ -63,7 +64,10 @@ onMounted(() => {
                     specialNotice.value = res.data[0]
                 loading.value = false
             })
-            .catch(err => console.log(err))
+            .catch(err => {
+                console.error(err)
+                ElMessage.error(err)
+            })
     }, 1000)
     // store.getNoticeList()
 })

@@ -63,6 +63,9 @@ const onSubmit = () => {
             else
                 ElMessage.error("用户不存在")
         })
-        .catch((err) => console.log(err));
+        .catch((err) => {
+            console.error(err)
+            ElMessage.error(err)
+        });
 }
 </script>

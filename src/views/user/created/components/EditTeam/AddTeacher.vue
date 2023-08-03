@@ -17,8 +17,7 @@
                 <span>学号：{{ searchResult!.jobNumber }}</span>
             </p>
             <p>
-                <el-button type="primary" plain style="width: 100%;"
-                    @click="handleConfirm(searchResult!.id)">确认邀请</el-button>
+                <el-button type="primary" plain style="width: 100%;" @click="handleConfirm">确认邀请</el-button>
             </p>
         </div>
         <div class="search-result-exit" v-if="isExit">
@@ -42,10 +41,13 @@ const props = defineProps({
     },
     teamTeacher: {
         type: Object
+    },
+    id: {
+        type: Number
     }
 })
 onMounted(() => {
-    if (props.teamTeacher !== undefined) {
+    if (JSON.stringify(props.teamTeacher) !== '{}') {
         isExit.value = true
         canUse.value = true
     }
@@ -70,7 +72,7 @@ const handleSearch = (formEl: FormInstance | undefined) => {
     formEl?.validate().then(res => {
         isSuccess.value = false
         isExit.value = false
-        if (props.teamTeacher !== undefined) {
+        if (JSON.stringify(props.teamTeacher) !== '{}') {
             isExit.value = true
             canUse.value = true
         }
@@ -83,23 +85,31 @@ const handleSearch = (formEl: FormInstance | undefined) => {
                         isSuccess.value = true
                     }
                 })
-                .catch(err => console.log(err))
+                .catch(err => {
+                    console.error(err)
+                    ElMessage.error(err)
+                })
         }
     }
     ).catch(err => {
         ElMessage.error("请正确填写用户信息")
     })
 }
-const getData: Function | undefined = inject("getData")
-const handleConfirm = (id) => {
-    axios.patch(`http://localhost:3000/teachers/${id}`, {
-        team: props.teamName
+const getTeamData: Function | undefined = inject("getData")
+const handleConfirm = () => {
+    axios.patch(`http://localhost:3000/teams/${props.id}`, {
+        teacher: searchResult.value
     })
         .then(res => {
-            getData!("AddTeacher")
+            getTeamData!("AddTeacher")
             canUse.value = true
+            FormRef.value!.resetFields()
+            isSuccess.value = false
         })
-        .catch(err => console.log(err))
+        .catch(err => {
+            console.error(err)
+            ElMessage.error(err)
+        })
 }
 const handleCancel = (formEl: FormInstance | undefined) => {
     isSuccess.value = false

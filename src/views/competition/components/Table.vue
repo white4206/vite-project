@@ -62,7 +62,10 @@ const getData = (message = '') => {
                 loading.value = false
                 if (message === 'delete') ElMessage.success("删除成功")
             })
-            .catch(err => console.log(err))
+            .catch(err => {
+                console.error(err)
+                ElMessage.error(err)
+            })
 
     }, 1000)
 }
@@ -93,7 +96,10 @@ const handleDelete = (index: number, row: User) => {
             getData('delete')
         })
         .catch(err => {
-            console.log(err)
+            {
+                console.error(err)
+                ElMessage.error(err)
+            }
             ElMessage.error("删除失败，请检查网络连接!")
         })
 }

@@ -10,6 +10,7 @@
   
 <script setup>
 import LeftSkeleton from './LeftSkeleton.vue'
+import { ElMessage } from 'element-plus';
 import axios from 'axios';
 import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router'
@@ -22,7 +23,10 @@ onMounted(() => {
                 tableData.value = res.data
                 loading.value = false
             })
-            .catch(err => console.log(err))
+            .catch(err => {
+                console.error(err)
+                ElMessage.error(err)
+            })
     }, 1000)
 })
 const router = useRouter()

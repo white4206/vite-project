@@ -16,7 +16,7 @@
             团队介绍：{{ data!.desc }}
         </div>
     </el-card>
-    <EditTeam v-model="isEdit" :id="id" @isShow="handleShow" @getNewData="handleGet"></EditTeam>
+    <EditTeam v-model="isEdit" :id="id" @isShow="handleShow"></EditTeam>
 </template>
 
 <script lang="ts" setup>
@@ -50,7 +50,10 @@ const handleDelete = () => {
                 .then(res => {
                     emit('getNewData', "delete")
                 })
-                .catch(err => console.log(err))
+                .catch(err => {
+                    console.error(err)
+                    ElMessage.error(err)
+                })
         })
         .catch(() => {
             ElMessage.info("取消删除")
@@ -62,9 +65,6 @@ const handleEdit = () => {
 }
 const handleShow = () => {
     isEdit.value = false
-}
-const handleGet = (message) => {
-    emit('getNewData', message)
 }
 </script>
 <style lang="scss" scoped>

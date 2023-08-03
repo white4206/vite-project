@@ -12,7 +12,7 @@
                     </div>
                 </template>
                 <AddMember @searchCancel="handleSearchCancel" :teamName="teamName" :teamMember="teamMember"
-                    ref="AddMemberRef">
+                    ref="AddMemberRef" :id="id">
                 </AddMember>
             </el-collapse-item>
             <TeamTeacher :teamData="teamData"></TeamTeacher>
@@ -25,7 +25,7 @@
                     </div>
                 </template>
                 <AddTeacher @searchCancel="handleSearchCancel" :teamName="teamName" :teamTeacher="teamTeacher"
-                    ref="AddTeacherRef">
+                    ref="AddTeacherRef" :id="id">
                 </AddTeacher>
             </el-collapse-item>
         </el-collapse>
@@ -77,6 +77,7 @@ const handleSearchCancel = () => {
     align-items: center;
     color: #409EFF;
     font-size: 14px;
+    user-select: none;
 }
 
 .add-box {
