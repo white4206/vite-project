@@ -9,7 +9,7 @@
             </el-icon>
             <span>个人中心</span>
         </el-menu-item>
-        <el-menu-item index="/setting">
+        <el-menu-item index="/settings">
             <el-icon>
                 <Setting />
             </el-icon>

@@ -14,7 +14,7 @@
     </RightSkeleton>
 </template>
   
-<script lang="ts" setup>
+<script setup>
 import RightSkeleton from './RightSkeleton.vue'
 import { ref, onMounted, onBeforeMount } from 'vue'
 import axios from 'axios'
@@ -24,15 +24,13 @@ const router = useRouter()
 const handleClick = (evt) => {
     router.push(`/notice/${evt.id}`)
 }
-const loading = ref<boolean>(true)
-var timer: number
+const loading = ref(true)
 onMounted(() => {
-    timer = setInterval(() => {
+    setTimeout(() => {
         axios.get("http://localhost:3000/notice?_limit=10")
             .then(res => {
                 tableData.value = res.data
                 loading.value = false
-                clearInterval(timer)
             })
             .catch(err => console.log(err))
         // let res = await axios.get("http://localhost:3000/notice?_limit=10")

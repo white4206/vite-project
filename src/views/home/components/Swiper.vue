@@ -20,7 +20,7 @@ const imageList = ref<{
 const loading = ref<boolean>(true)
 var timer: number
 onBeforeMount(() => {
-    timer = setInterval(() => {
+    setTimeout(() => {
         imageList.value = [
             {
                 name: "李白河校区",
@@ -44,7 +44,6 @@ onBeforeMount(() => {
             }
         ]
         loading.value = false
-        clearInterval(timer)
     }, 500)
 })
 </script>

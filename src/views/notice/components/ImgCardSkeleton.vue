@@ -6,7 +6,7 @@
             </div>
             <div class="skeleton-content-box">
                 <el-skeleton-item class="skeleton-content-item" variant="h1" style="width: 50%" />
-                <el-skeleton-item class="skeleton-content-item" variant="div" style="width: 100%" />
+                <el-skeleton-item class="skeleton-content-item" style="width: 100%" />
             </div>
         </template>
         <template #default>

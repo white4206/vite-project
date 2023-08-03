@@ -28,11 +28,11 @@ import { useRouter } from 'vue-router'
 import diffTime from './diffTime'
 import axios from 'axios'
 interface User {
-    startDate: string
-    finishDate: string
-    name: string
-    details: string
-    id: number
+    startDate: string,
+    finishDate: string,
+    name: string,
+    details: string,
+    id: number,
 }
 const store = useTeacherStore()
 const tableRowClassName = ({
@@ -54,14 +54,13 @@ const tableRowClassName = ({
 }
 const loading = ref<boolean>(true)
 const tableData = ref<User[]>([])
-var timer: number
-const getData = () => {
-    timer = setInterval(() => {
+const getData = (message = '') => {
+    setTimeout(() => {
         axios.get("http://localhost:3000/competitions")
             .then(res => {
                 tableData.value = res.data
                 loading.value = false
-                clearInterval(timer)
+                if (message === 'delete') ElMessage.success("删除成功")
             })
             .catch(err => console.log(err))
 
@@ -90,9 +89,8 @@ const handleDelete = (index: number, row: User) => {
     // tableData.value.splice(index, 1)
     axios.delete(`http://localhost:3000/competitions/${row.id}`)
         .then(res => {
-            ElMessage.success("删除成功")
             loading.value = true
-            getData()
+            getData('delete')
         })
         .catch(err => {
             console.log(err)

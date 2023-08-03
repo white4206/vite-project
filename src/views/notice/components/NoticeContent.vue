@@ -25,10 +25,10 @@ import { ref, onMounted } from 'vue'
 import axios from 'axios'
 import { useRoute } from 'vue-router'
 const noticeList = ref<{
-    "title": string
-    "author": string
-    "content": string
-    "id": number
+    title: string
+    author: string
+    content: string
+    id: number
     [propsName: string]: any
 }[]>([])
 const activeNames = ref<string | string[]>('')
@@ -36,14 +36,12 @@ const handleChange = (val: string[]) => {
 }
 const route = useRoute()
 const loading = ref<boolean>(true)
-var timer: number
 onMounted(() => {
-    timer = setInterval(() => {
+    setTimeout(() => {
         axios.get("http://localhost:3000/notice")
             .then(res => {
                 noticeList.value = res.data
                 loading.value = false
-                clearInterval(timer)
             })
             .catch(err => console.log(err))
         activeNames.value = route.params.Nid

@@ -40,3 +40,9 @@ const defaultActive = computed(() => {
 })
 import { ElMenuItemGroup } from 'element-plus';
 </script>
+<style>
+.el-menu-vertical-demo:not(.el-menu--collapse) {
+    width: 200px;
+    min-height: 400px;
+}
+</style>

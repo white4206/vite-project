@@ -15,9 +15,8 @@ const imageList = ref<{
     [propsName: string]: any
 }[]>([])
 const loading = ref<boolean>(true)
-var timer: number
 onMounted(() => {
-    timer = setInterval(() => {
+    setTimeout(() => {
         imageList.value = [
             {
                 name: "不忘初心",
@@ -41,7 +40,6 @@ onMounted(() => {
             }
         ]
         loading.value = false
-        clearInterval(timer)
     }, 1000)
 })
 </script>

@@ -2,7 +2,7 @@
     <!-- <CreateProject></CreateProject> -->
     <div class="created-box" v-loading="loading">
         <template v-for="(item, index) in teamData" :key="item.id">
-            <TeamCard :data="item" :index="item.id" @getNewData="handleGet">
+            <TeamCard :data="item" :id="item.id" @getNewData="handleGet">
             </TeamCard>
         </template>
         <CreateCard @click="dialogTableVisible = true">
@@ -38,12 +38,14 @@
 </template>
 
 <script lang="ts" setup>
+import { ElMessage } from 'element-plus'
 import { ref, onMounted } from 'vue'
 import CreateCard from './components/CreateCard.vue';
 import TeamCard from './components/TeamCard.vue';
 import { Close } from '@element-plus/icons-vue'
 import CreateTeam from './components/CreateTeam.vue';
 import axios from 'axios';
+
 const loading = ref(true)
 interface iTeamData {
     name: string,
@@ -52,14 +54,19 @@ interface iTeamData {
     [propsName: string]: any
 }
 const teamData = ref<iTeamData[]>()
-var timer: number
-const getData = () => {
-    timer = setInterval(() => {
-        axios.get("http://localhost:3000/teams")
+const getData = (message = '') => {
+    setTimeout(() => {
+        axios.get(`http://localhost:3000/teams`)
             .then(res => {
                 teamData.value = res.data
                 loading.value = false
-                clearInterval(timer)
+                if (message === 'delete')
+                    ElMessage.success("删除成功")
+                else if (message === 'AddNewTeam') {
+                    ElMessage.success("创建成功")
+                }
+                else if (message === 'EditTeam')
+                    ElMessage.success("编辑成功")
             })
             .catch(err => console.log(err))
     }, 1000)
@@ -67,9 +74,9 @@ const getData = () => {
 onMounted(() => {
     getData()
 })
-const handleGet = () => {
+const handleGet = (message) => {
     loading.value = true
-    getData()
+    getData(message)
 }
 const dialogTableVisible = ref(false)
 const isCreate = ref(false)

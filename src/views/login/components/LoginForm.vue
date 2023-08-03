@@ -45,7 +45,7 @@ const onSubmit = () => {
     axios
         .get(`http://localhost:3000/users?username=${form.name}&password=${form.password}`)
         .then((res) => {
-            if (res.data.length) {
+            if (res.data.length === 1) {
                 // isLogged.value = true
                 loginStore.$patch({
                     isLogged: true
@@ -57,6 +57,11 @@ const onSubmit = () => {
                 localStorage.setItem("loginToken", "successful login")
                 ElMessage.success("登陆成功")
             }
+            else if (res.data.length > 1)
+                ElMessage.error("error")
+
+            else
+                ElMessage.error("用户不存在")
         })
         .catch((err) => console.log(err));
 }

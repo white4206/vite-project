@@ -1,0 +1,114 @@
+<template>
+    <div class="team-member">
+        <el-card shadow="never" :body-style="{
+            'padding': '15px 10px'
+        }">
+            <span class="team-leader-card">
+                <div style="margin-right: 10px">
+                    <el-avatar :size="50" src="/src/assets/head.jpg" />
+                </div>
+                <div>
+                    <div style="padding-bottom: 5px;">
+                        <span style="padding-right:10px">{{ teamData!.leader.name }}</span>
+                        <el-tag class="leader-tag" type="">队长</el-tag>
+                    </div>
+                    <div class="small-text">{{ teamData!.leader.major }}</div>
+                </div>
+                <DropDown :teamData="teamData" :id="id"></DropDown>
+            </span>
+        </el-card>
+        <el-row class="content" :gutter="10" style="margin-top: 10px;">
+            <el-col :span="8" v-for="(item, index) in teamData!.member" style="margin-bottom: 10px">
+                <el-card shadow="never" :body-style="{
+                    'padding': '10px',
+                }
+                    ">
+                    <span class="team-member-card">
+                        <div style="margin-right: 10px;">
+                            <el-avatar :size="50" src="/src/assets/head.jpg" />
+                        </div>
+                        <div>
+                            <div style="padding-bottom: 5px;">
+                                <span style="padding-right: 10px;">{{ item.name }}</span>
+                                <el-tag class="member-tag" type="success">成员</el-tag>
+                            </div>
+                            <div class="small-text">{{ item.major }}</div>
+                        </div>
+                        <div class="close-icon" @click="handleDeleteMember(item.id, index)">
+                            <el-icon>
+                                <Close />
+                            </el-icon>
+                        </div>
+                    </span>
+                </el-card>
+            </el-col>
+        </el-row>
+    </div>
+</template>
+
+<script lang="ts" setup>
+import DropDown from './DropDown.vue'
+import { Close } from '@element-plus/icons-vue'
+import { inject } from 'vue'
+import axios from 'axios'
+
+const props = defineProps({
+    teamData: {
+        type: Object
+    },
+    id: {
+        type: Number
+    }
+})
+const getData: Function | undefined = inject("getData")
+const handleDeleteMember = (id, index) => {
+    axios.patch(`http://localhost:3000/students/${id}`, {
+        team: ""
+    })
+        .then(res => {
+            getData!("delete")
+        })
+        .catch(err => console.log(err))
+}
+</script>
+
+<style lang="scss" scoped>
+.team-leader-card,
+.team-member-card {
+    display: flex;
+    flex-direction: row;
+    position: relative;
+}
+
+.small-text {
+    color: #73767a;
+    font-size: 12px;
+}
+
+.close-icon {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    opacity: 0.4;
+}
+
+.close-icon:hover {
+    opacity: 0.8;
+}
+
+.leader-tag {
+    width: 75px;
+    position: absolute;
+    top: -15px;
+    left: -30px;
+    transform: rotate(-35deg);
+}
+
+.member-tag {
+    width: 80px;
+    position: absolute;
+    top: -10px;
+    left: -35px;
+    transform: rotate(-35deg);
+}
+</style>

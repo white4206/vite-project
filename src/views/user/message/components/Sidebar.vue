@@ -1,5 +1,5 @@
 <template>
-    <el-menu default-active="1" class="el-menu-vertical-demo">
+    <el-menu default-active="1">
         <el-menu-item :index="item.toString()" v-for="item in 7" key="item">
             <span>
                 <div>{{ item }}</div>

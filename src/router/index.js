@@ -11,6 +11,29 @@ const routes = [
     component: () => import("../views/home/index.vue"),
   },
   {
+    path: "/competition",
+    component: () => import("../views/competition/index.vue"),
+    children: [
+      {
+        path: "totalCompetitions",
+        component: () =>
+          import("../views/competition/components/TotalCompetitions.vue"),
+      },
+      {
+        path: "details/:Cid",
+        component: () => import("../views/competition/components/Details.vue"),
+      },
+      {
+        path: "/competition",
+        redirect: "/competition/totalCompetitions",
+      },
+      {
+        path: "/competition/:temp",
+        redirect: "/competition/totalCompetitions",
+      },
+    ],
+  },
+  {
     path: "/notice",
     component: () => import("../views/notice/index.vue"),
     children: [
@@ -47,27 +70,8 @@ const routes = [
     ],
   },
   {
-    path: "/competition",
-    component: () => import("../views/competition/index.vue"),
-    children: [
-      {
-        path: "totalCompetitions",
-        component: () =>
-          import("../views/competition/components/TotalCompetitions.vue"),
-      },
-      {
-        path: "details/:Cid",
-        component: () => import("../views/competition/components/Details.vue"),
-      },
-      {
-        path: "/competition",
-        redirect: "/competition/totalCompetitions",
-      },
-      {
-        path: "/competition/:temp",
-        redirect: "/competition/totalCompetitions",
-      },
-    ],
+    path: "/settings",
+    component: () => import("../views/settings/index.vue"),
   },
   {
     path: "/",

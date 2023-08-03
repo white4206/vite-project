@@ -8,21 +8,19 @@
     </LeftSkeleton>
 </template>
   
-<script lang="ts" setup>
+<script setup>
 import LeftSkeleton from './LeftSkeleton.vue'
 import axios from 'axios';
 import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router'
 const tableData = ref([])
-const loading = ref<boolean>(true)
-var timer: number
+const loading = ref(true)
 onMounted(() => {
-    timer = setInterval(() => {
+    setTimeout(() => {
         axios.get("http://localhost:3000/competitions?_limit=5")
             .then(res => {
                 tableData.value = res.data
                 loading.value = false
-                clearInterval(timer)
             })
             .catch(err => console.log(err))
     }, 1000)
