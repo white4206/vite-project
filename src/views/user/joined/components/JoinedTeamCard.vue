@@ -3,34 +3,38 @@
         <template #header>
             <div class="card-header">
                 <span class="card-header-title">
-                    <span><img :src="data.logo.url" :alt="data.name" width="25"></span>
-                    {{ data.name }}
+                    <span><img :src="data!.logo.url" :alt="data!.name" width="25"></span>
+                    {{ data!.name }}
                 </span>
                 <span>
-                    <el-button type="primary" plain>详情</el-button>
+                    <el-button type="primary" plain @click="handleOpen">详情</el-button>
                 </span>
             </div>
         </template>
         <div class="text item">
-            负责人：{{ data.leader.name }}
-        </div>
-        <div class="text item">
-            团队介绍：{{ data.desc }}
+            <el-tag type="warning"> 团队介绍：</el-tag>
+            {{ data!.desc }}
         </div>
     </el-card>
+    <detail v-model="isOpen" :id="id"></detail>
 </template>
-
-<script setup>
+<script lang="ts" setup>
+import detail from './detail/detail.vue';
 import { ref } from 'vue'
-const dataList = ref({
-    name: "同学1",
-    status: "通过"
-})
+
 const props = defineProps({
     data: {
         type: Object
+    },
+    id: {
+        type: Number
     }
 })
+const isOpen = ref(false)
+
+const handleOpen = () => {
+    isOpen.value = true
+}
 </script>
 <style lang="scss" scoped>
 .card-header {

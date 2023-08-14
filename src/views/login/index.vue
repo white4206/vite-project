@@ -1,18 +1,18 @@
 <template>
-    <div class="login-box">
-        <el-row justify="space-around" align="middle">
-            <el-col :span="8">
+    <el-card class="login-box">
+        <el-row justify="center" align="middle">
+            <el-col :span="12">
                 <div class="grid-content">
                     <LoginImg></LoginImg>
                 </div>
             </el-col>
-            <el-col :span="8">
+            <el-col :span="10">
                 <div class="grid-content LoginForm">
                     <LoginForm></LoginForm>
                 </div>
             </el-col>
         </el-row>
-    </div>
+    </el-card>
 </template>
   
 <script setup>
@@ -41,16 +41,16 @@ localStorage.setItem("loginToken", "")
 
 .LoginForm {
     text-align: center;
-    padding: 50px;
+    padding: 10px;
     background-color: #ecf5ff;
-    border-radius: 10px
+    border-radius: 50px;
 }
 
 .login-box {
-    margin: 10px 120px;
-    border: 1px solid #d1d2d2;
-    border-radius: 20px;
-    box-shadow: rgb(194, 193, 193) 0px 0px 8px 0px;
+    user-select: none;
+    margin: 50px 12.5%;
+    border-radius: 25px;
+    background-color: #FFFFFF;
 }
 </style>
   

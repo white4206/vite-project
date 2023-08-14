@@ -1,15 +1,15 @@
 <template>
-    <div class="block text-center" m="t-4">
-        <el-carousel v-loading="loading" trigger="click" height="300px">
+    <div v-loading="loading">
+        <el-carousel class="swiper-box" v-loading="false" trigger="click" height="300px">
             <el-carousel-item v-for="item in imageList" :key="item.id" style="text-align: center">
-                <img :src="item.url" :alt="item.name" style="height: 300px;width: 100%">
+                <img class="swiper-img" :src="item.url" :alt="item.name">
             </el-carousel-item>
         </el-carousel>
     </div>
 </template>
 
 <script lang="ts" setup>
-import { onBeforeMount, onBeforeUnmount, ref } from 'vue'
+import { onBeforeMount, ref } from 'vue'
 
 const imageList = ref<{
     name: string,
@@ -18,7 +18,6 @@ const imageList = ref<{
     [propsName: string]: any
 }[]>([])
 const loading = ref<boolean>(true)
-var timer: number
 onBeforeMount(() => {
     setTimeout(() => {
         imageList.value = [
@@ -44,11 +43,20 @@ onBeforeMount(() => {
             }
         ]
         loading.value = false
-    }, 500)
+    }, 1000)
 })
 </script>
 
 <style lang="scss" scoped>
+.swiper-box {
+    border-radius: 15px
+}
+
+.swiper-img {
+    height: 300px;
+    width: 100%;
+}
+
 .demonstration {
     color: var(--el-text-color-secondary);
 }

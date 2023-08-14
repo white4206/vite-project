@@ -1,7 +1,7 @@
 <template>
-    <el-upload class="avatar-uploader" action="http://localhost:3000/uploadImg" ref="uploadRef" :show-file-list="true"
-        list-type="picture-card" :on-change="handleChange" :on-success="handleSuccess" :before-upload="beforeUpload"
-        :on-exceed="handleExceed" :auto-upload="false" :file-list="fileList" :limit="1">
+    <el-upload class="avatar-uploader" action="#" ref="uploadRef" :show-file-list="true"
+        list-type="picture-card" :on-change="handleChange" :on-preview="handlePictureCardPreview" :on-remove="handleRemove"
+        :auto-upload="false" :file-list="uploadFiles" :limit="2" :on-success="handleSuccess" :before-upload="beforeUpload">
         <template #tip>
             <div class="el-upload__tip">
                 仅支持JPG、GIF、PNG格式，文件小于2M。
@@ -11,30 +11,15 @@
         <el-icon v-else class="avatar-uploader-icon">
             <Plus />
         </el-icon>
-        <template #file="{ file }">
-            <div>
-                <img class="el-upload-list__item-thumbnail" :src="file.url" alt="" />
-                <span class="el-upload-list__item-actions">
-                    <span class="el-upload-list__item-preview" @click="handlePictureCardPreview(file)">
-                        <el-icon><zoom-in /></el-icon>
-                    </span>
-                    <span v-if="!disabled" class="el-upload-list__item-delete" @click="handleRemove(file)">
-                        <el-icon>
-                            <Delete />
-                        </el-icon>
-                    </span>
-                </span>
-            </div>
-        </template>
     </el-upload>
-    <el-dialog v-model="dialogVisible">
-        <img :src="dialogImageUrl" alt="Preview Image" style="width:100%" />
+    <el-dialog v-model="dialogVisible" align-center width="40%" style="text-align: center;">
+        <img :src="dialogImageUrl" alt="Preview Image" style="width:500px" />
     </el-dialog>
 </template>
 
 <script lang="ts" setup>
 import { ref } from 'vue'
-import { Plus, Delete, ZoomIn } from '@element-plus/icons-vue'
+import { Plus } from '@element-plus/icons-vue'
 import type { UploadFile, UploadProps } from 'element-plus'
 import { ElMessage } from 'element-plus'
 
@@ -42,10 +27,11 @@ const props = defineProps({
     form: {
         type: Object
     },
-    fileList: {
+    logoFile: {
         type: Object
     }
 })
+const uploadFiles = ref(props.logoFile)
 const imageUrl = ref('')
 const uploadRef = ref()
 // const base64 = ref()
@@ -64,9 +50,6 @@ const beforeUpload: UploadProps['beforeUpload'] = (rawFile) => {
     //     return false
     // }
     // return true
-}
-const handleExceed: UploadProps['onExceed'] = (rawFile) => {
-    ElMessage.warning("只能上传一张logo图片，请先删除已上传图片")
 }
 const handleChange: UploadProps['onChange'] = (rawFile, rawFileList) => {
     /*     let formData = new FormData()
@@ -88,7 +71,11 @@ const handleChange: UploadProps['onChange'] = (rawFile, rawFileList) => {
 
     //选用
     // fileList.value = rawFileList
-    if (rawFile.raw?.type !== 'image/jpeg' && rawFile.raw?.type !== 'image/png'&&rawFile.raw?.type!=='image/gif') {
+    if (rawFileList.length > 1) {
+        rawFileList.splice(0, 1);
+    }
+    uploadFiles.value = rawFileList
+    if (rawFile.raw?.type !== 'image/jpeg' && rawFile.raw?.type !== 'image/png' && rawFile.raw?.type !== 'image/gif') {
         ElMessage.error('logo图片格式必须是JPG、PNG、GIF')
         uploadRef.value.clearFiles()
         return
@@ -124,10 +111,8 @@ const handleChange: UploadProps['onChange'] = (rawFile, rawFileList) => {
 }
 const dialogImageUrl = ref('')
 const dialogVisible = ref(false)
-const disabled = ref(false)
 const handleRemove = (file: UploadFile) => {
     // fileList.value.splice(0, 1)
-    uploadRef.value.handleRemove(file)
 }
 
 const handlePictureCardPreview = (file: UploadFile) => {
@@ -135,7 +120,6 @@ const handlePictureCardPreview = (file: UploadFile) => {
     dialogVisible.value = true
 }
 </script>
-
 <style lang="scss">
 .avatar-uploader .el-upload {
     border: 1px dashed var(--el-border-color);
@@ -163,5 +147,15 @@ const handlePictureCardPreview = (file: UploadFile) => {
     width: 125px;
     height: 125px;
     display: block;
+}
+
+::v-deep .el-upload-list--picture-card .el-upload-list__item {
+    width: 75px;
+    height: 75px;
+}
+
+::v-deep .el-upload--picture-card {
+    width: 75px;
+    height: 75px;
 }
 </style>

@@ -13,10 +13,11 @@
             </div>
         </template>
         <div class="text item">
-            团队介绍：{{ data!.desc }}
+            <el-tag>团队介绍：</el-tag>
+            {{ data!.desc }}
         </div>
     </el-card>
-    <EditTeam v-model="isEdit" :id="id" @isShow="handleShow"></EditTeam>
+    <EditTeam v-model="isEdit" :id="id"></EditTeam>
 </template>
 
 <script lang="ts" setup>
@@ -46,7 +47,7 @@ const handleDelete = () => {
         }
     )
         .then(() => {
-            axios.delete(`http://localhost:3000/teams/${props.id}`)
+            axios.delete(`http://localhost:3000/teams/${props!.id}`)
                 .then(res => {
                     emit('getNewData', "delete")
                 })
@@ -62,9 +63,6 @@ const handleDelete = () => {
 const isEdit = ref(false)
 const handleEdit = () => {
     isEdit.value = true
-}
-const handleShow = () => {
-    isEdit.value = false
 }
 </script>
 <style lang="scss" scoped>

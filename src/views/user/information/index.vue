@@ -1,11 +1,15 @@
 <template>
-    <el-row>
-        <el-col :span="8">
+    <el-row class="box">
+        <el-col :span="9">
             <div class="grid-content">
-                <UploadAvatar></UploadAvatar>
+                <el-form label-width="75px" class="demo-ruleForm" status-icon size="large" label-position="left">
+                    <el-form-item label="用户头像" prop="name">
+                        <UploadAvatar></UploadAvatar>
+                    </el-form-item>
+                </el-form>
             </div>
         </el-col>
-        <el-col :span="16">
+        <el-col :span="15">
             <div class="grid-content information-box">
                 <SelfInformation></SelfInformation>
             </div>
@@ -18,7 +22,7 @@ import SelfInformation from './components/SelfInformation.vue';
 import UploadAvatar from './components/UploadAvatar.vue';
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .el-row {
     margin-bottom: 20px;
 }
@@ -36,8 +40,15 @@ import UploadAvatar from './components/UploadAvatar.vue';
 }
 
 .information-box {
-    border-left: 2px dotted rgb(226, 225, 225);
-    padding: 0 75px;
+    border-left: 2px dotted #C0C4CC;
+    padding: 0 150px 0 75px;
+}
+
+.box {
+    min-height: 100%;
+    padding: 20px;
+    border-radius: 15px;
+    background-color: #FFFFFF;
 }
 </style>
   

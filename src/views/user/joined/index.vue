@@ -1,7 +1,7 @@
 <template>
     <div class="joinedTeamCard-box" v-loading="loading">
         <template v-for="(item, index) in joinedTeamData" :key="item.id">
-            <JoinedTeamCard :data="item"></JoinedTeamCard>
+            <JoinedTeamCard :data="item" :id="item.id"></JoinedTeamCard>
         </template>
     </div>
 </template>
@@ -11,7 +11,9 @@ import JoinedTeamCard from './components/JoinedTeamCard.vue';
 import axios from 'axios';
 import { ElMessage } from 'element-plus';
 import { onMounted, ref } from 'vue';
+import useUserStore from '../../../store/userStore'
 
+const store = useUserStore()
 const loading = ref(true)
 const joinedTeamData = ref([])
 const getData = () => {
@@ -22,7 +24,7 @@ const getData = () => {
                 res.data.map(item => {
                     let isJoined = false
                     item.member.map(item => {
-                        if (item.studentNumber === "stu12345678")
+                        if (item.studentNumber === store.userInformation.studentNumber)
                             isJoined = true
                     })
                     if (isJoined)
@@ -46,5 +48,6 @@ onMounted(() => {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
+    min-height: 100%
 }
 </style>

@@ -1,5 +1,5 @@
 <template>
-    <el-skeleton style="width: 100%" :loading="loading" animated>
+    <el-skeleton style="width: 100%" animated>
         <template #template>
             <div class="skeleton-title-box">
                 <el-skeleton-item class="skeleton-title-item" variant="h1" style="width: 60%" />
@@ -18,14 +18,7 @@
     </el-skeleton>
 </template>
   
-<script lang="ts" setup>
-import { ref } from 'vue'
-
-const loading = ref(false)
-</script>
-
 <style scoped>
-
 .skeleton-title-item {
     height: 30px;
     margin-right: 10px;

@@ -27,7 +27,7 @@ import Swiper from './components/Swiper.vue';
 </script>
 <style lang="scss" scoped>
 .el-row {
-    margin-bottom: 20px;
+    margin-bottom: 50px;
 }
 
 .el-row:last-child {

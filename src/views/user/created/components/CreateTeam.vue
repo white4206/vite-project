@@ -10,13 +10,13 @@
             <el-row justify="center" class="content">
                 <el-col :span="24">
                     <div class="grid-content">
-                        <el-form ref="ruleFormRef" :model="form" label-width="120px" :rules="rules" class="demo-ruleForm"
+                        <el-form ref="formRef" :model="form" label-width="120px" :rules="rules" class="demo-ruleForm"
                             status-icon size="large" label-position="left">
                             <el-form-item label="团队名称" prop="name">
                                 <el-input v-model="form.name" />
                             </el-form-item>
-                            <el-form-item label="团队logo" prop="logoURL">
-                                <UploadLogo :form="form" :file-list="fileList"></UploadLogo>
+                            <el-form-item label="团队logo" prop="logo">
+                                <UploadLogo :form="form" :logoFile="logoFile"></UploadLogo>
                             </el-form-item>
                             <el-form-item label="团队描述" prop="desc">
                                 <el-input v-model="form.desc" :rows="6" maxlength="100" show-word-limit type="textarea"
@@ -29,8 +29,8 @@
         </div>
         <template #footer>
             <div class="dialog-footer">
-                <el-button type="primary" @click="submitForm(ruleFormRef)">创建</el-button>
-                <el-button @click="resetForm(ruleFormRef)">取消</el-button>
+                <el-button type="primary" @click="submitCreate(formRef)">创建</el-button>
+                <el-button @click="cancelCreate(formRef)">取消</el-button>
             </div>
         </template>
     </el-dialog>
@@ -42,6 +42,9 @@ import { ref, reactive } from 'vue'
 import { ElMessage } from 'element-plus'
 import type { FormInstance } from 'element-plus'
 import axios from 'axios'
+import useUserStore from '../../../../store/userStore'
+
+const store = useUserStore()
 //表单校验
 const logoValidator = (rule: any, value: any, callback: any) => {
     if (value === false)
@@ -51,26 +54,25 @@ const logoValidator = (rule: any, value: any, callback: any) => {
 }
 const rules = reactive({
     name: [{ required: true, message: '请输入团队名称', trigger: 'blur' }, { min: 1, max: 20, message: '长度不可以超过20位', trigger: 'blur' }],
-    logoURL: [{ required: true, validator: logoValidator, trigger: 'blur' }],
+    logo: [{ required: true, validator: logoValidator, trigger: 'blur' }],
     desc: [{ required: true, message: '请输入团队描述', trigger: 'blur' }, { min: 10, max: 200, message: '内容至少为10位', trigger: 'blur' }]
 })
 //表单
 const emit = defineEmits(['isShow', 'getNewData'])
-interface RuleForm {
+const formRef = ref<FormInstance>()
+const form = reactive<{
     name: string,
     logo: any,
     desc: string
-}
-const ruleFormRef = ref<FormInstance>()
-const form = reactive<RuleForm>({
+}>({
     name: '',
     logo: '',
     desc: '',
 })
-const submitForm = (formEl: FormInstance | undefined) => {
+const submitCreate = (formEl: FormInstance | undefined) => {
     // if (JSON.stringify(form) !== '{"name":"","logo":"","desc":""}') {
     formEl?.validate().then(res => {
-        axios.get(`http://localhost:3000/students?studentNumber=stu12345678`)
+        axios.get(`http://localhost:3000/users?studentNumber=${store.userInformation.studentNumber}`)
             .then(res => {
                 emit("isShow")
                 axios.post("http://localhost:3000/teams", {
@@ -78,9 +80,16 @@ const submitForm = (formEl: FormInstance | undefined) => {
                     desc: form.desc,
                     // logoURL: base64.value
                     logo: form.logo,
-                    leader: res.data[0],
-                    member:[],
-                    teacher:{}
+                    leader: {
+                        name: res.data[0].name,
+                        studentNumber: res.data[0].studentNumber,
+                        major: res.data[0].major,
+                        department: res.data[0].department,
+                        grade: res.data[0].grade,
+                        id: res.data[0].id
+                    },
+                    member: [],
+                    teacher: {}
                 })
                     .then(res => {
                         emit('getNewData', 'AddNewTeam')
@@ -98,12 +107,12 @@ const submitForm = (formEl: FormInstance | undefined) => {
         ElMessage.error("请正确填写团队信息")
     })
 }
-function resetForm(formEl: FormInstance | undefined) {
+function cancelCreate(formEl: FormInstance | undefined) {
     emit("isShow")
     formEl?.resetFields()
     ElMessage.info("取消创建")
 }
-const fileList = ref<object[]>([])
+const logoFile = ref<object[]>([])
 </script>
 
 

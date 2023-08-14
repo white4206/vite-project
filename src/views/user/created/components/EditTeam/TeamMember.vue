@@ -1,6 +1,6 @@
 <template>
     <div class="team-member">
-        <el-card shadow="never" :body-style="{
+        <el-card shadow="hover" :body-style="{
             'padding': '15px 10px'
         }">
             <span class="team-leader-card">
@@ -10,7 +10,7 @@
                 <div>
                     <div style="padding-bottom: 5px;">
                         <span style="padding-right:10px">{{ teamData!.leader.name }}</span>
-                        <el-tag class="leader-tag" type="">队长</el-tag>
+                        <el-tag class="leader-tag" type="danger">队长</el-tag>
                     </div>
                     <div class="small-text">{{ teamData!.leader.major }}</div>
                 </div>
@@ -18,8 +18,8 @@
             </span>
         </el-card>
         <el-row class="content" :gutter="10" style="margin-top: 10px;">
-            <el-col :span="8" v-for="(item, index) in teamData!.member" style="margin-bottom: 10px">
-                <el-card shadow="never" :body-style="{
+            <el-col :span="8" v-for="(item, index) in teamData!.member">
+                <el-card shadow="hover" :body-style="{
                     'padding': '10px',
                 }
                     ">
@@ -70,7 +70,6 @@ const handleDeleteMember = (id) => {
                 if (item.id === id)
                     rawMember.splice(index, 1)
             });
-            console.log(rawMember)
             axios.patch(`http://localhost:3000/teams/${props.id}`, {
                 member: rawMember
             })
@@ -91,6 +90,10 @@ const handleDeleteMember = (id) => {
 </script>
 
 <style lang="scss" scoped>
+.team-member {
+    margin: 5px
+}
+
 .team-leader-card,
 .team-member-card {
     display: flex;

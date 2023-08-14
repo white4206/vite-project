@@ -6,6 +6,6 @@
 
 <style lang="scss" scoped>
 .loginImg img {
-    width: 600px;
+    width: 100%;
 }
 </style>

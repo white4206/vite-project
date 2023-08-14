@@ -59,15 +59,25 @@ const props = defineProps({
 })
 const AddMemberRef = ref()
 const AddTeacherRef = ref()
-const activeNames = ref<string[] | string>()
+const activeNames = ref('')
 const handleActive = (val: string) => {
-    AddMemberRef.value.handleCancel()
-    AddTeacherRef.value.handleCancel()
+    AddMemberRef.value.handleChange()
+    AddTeacherRef.value.handleChange()
 }
 const handleSearchCancel = () => {
     activeNames.value = ''
 }
 </script>
+
+<style>
+.el-collapse {
+    border: none;
+}
+
+.el-collapse-item__header {
+    border: none
+}
+</style>
 
 <style lang="scss" scoped>
 .collapse-title {

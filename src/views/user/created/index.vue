@@ -45,7 +45,9 @@ import TeamCard from './components/TeamCard.vue';
 import { Close } from '@element-plus/icons-vue'
 import CreateTeam from './components/CreateTeam.vue';
 import axios from 'axios';
+import useUserStore from '../../../store/userStore'
 
+const store = useUserStore()
 const loading = ref(true)
 interface iTeamData {
     name: string,
@@ -59,10 +61,9 @@ const getData = (msg = '') => {
     setTimeout(() => {
         axios.get(`http://localhost:3000/teams`)
             .then(res => {
-                console.log(res.data)
                 teamData.value = []
                 res.data.map(item => {
-                    if (item.leader.studentNumber === "stu12345678")
+                    if (item.leader.studentNumber === store.userInformation.studentNumber)
                         teamData.value?.push(item)
                 })
                 loading.value = false
@@ -105,6 +106,7 @@ provide("getData", getData)
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
+    min-height: 100%
 }
 
 .my-header {

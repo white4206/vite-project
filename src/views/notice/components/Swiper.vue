@@ -1,7 +1,7 @@
 <template>
-    <el-carousel trigger="click" v-loading="loading" height="200px">
+    <el-carousel class="swiper-box" trigger="click" v-loading="loading" height="200px">
         <el-carousel-item v-for="(item, index) in imageList" :key="item.id" style="text-align: center">
-            <img :src="item.url" :alt="item.name" style="height: 200px;width: 100%;">
+            <img class="swiper-img" :src="item.url" :alt="item.name">
         </el-carousel-item>
     </el-carousel>
 </template>
@@ -45,6 +45,15 @@ onMounted(() => {
 </script>
 
 <style lang="scss" scoped>
+.swiper-box {
+    border-radius: 15px
+}
+
+.swiper-img {
+    height: 200px;
+    width: 100%;
+}
+
 .demonstration {
     color: var(--el-text-color-secondary);
 }

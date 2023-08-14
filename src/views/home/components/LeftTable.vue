@@ -1,7 +1,7 @@
 <template>
     <LeftSkeleton :loading="loading">
-        <el-table :data="tableData" stripe style="width: 100%" @row-click="handleClick($event)"
-            :show-overflow-tooltip="true" :default-sort="{ prop: 'startDate', order: 'ascending' }">
+        <el-table class="table-box" :data="tableData" stripe @row-click="handleClick($event)" :show-overflow-tooltip="true"
+            :default-sort="{ prop: 'startDate', order: 'ascending' }">
             <el-table-column prop="startDate" sortable label="开始日期" width="110" />
             <el-table-column prop="name" label="比赛名称" />
         </el-table>
@@ -36,7 +36,10 @@ const handleClick = (evt) => {
 </script>
 
 <style lang="scss" scoped>
-.details-text {
-    height: 30px;
+::v-deep .el-table__row {
+    cursor: pointer;
+}
+.table-box {
+    border-radius: 5px;
 }
 </style>

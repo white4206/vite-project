@@ -1,10 +1,12 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
 
-const useTeacherStore = defineStore("isTeacher", () => {
+const useUserStore = defineStore("isTeacher", () => {
   const isTeacher = ref(false);
+  const userInformation = ref();
   return {
     isTeacher,
+    userInformation,
   };
 });
-export default useTeacherStore;
+export default useUserStore;

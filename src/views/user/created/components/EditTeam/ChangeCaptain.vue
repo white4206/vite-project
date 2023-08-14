@@ -36,7 +36,7 @@ const props = defineProps({
     }
 })
 const getTeamData: Function | undefined = inject("getData")
-const resetEditForm: Function | undefined = inject("resetForm")
+const cancelEdit: Function | undefined = inject("cancelEdit")
 const handleCommand = (id) => {
     ElMessageBox.confirm(
         '确认变更团队队长吗？将失去管理团队的权限，变更后不可恢复！',
@@ -69,16 +69,23 @@ const handleCommand = (id) => {
                     console.error(err)
                     ElMessage.error(err)
                 })
-            axios.get(`http://localhost:3000/students?id=${id}`)
+            axios.get(`http://localhost:3000/users?id=${id}`)
                 .then(res => {
                     if (res.data.length !== 0) {
                         axios.patch(`http://localhost:3000/teams/${props.id}`, {
-                            leader: res.data[0]
+                            leader: {
+                                name: res.data[0].name,
+                                studentNumber: res.data[0].studentNumber,
+                                major: res.data[0].major,
+                                department: res.data[0].department,
+                                grade: res.data[0].grade,
+                                id: res.data[0].id
+                            },
                         })
                             .then(res => {
                                 getTeamData!()
                                 ElMessage.success("变更队长成功")
-                                resetEditForm!('changeCaptain')
+                                cancelEdit!('changeCaptain')
                             })
                             .catch(err => {
                                 console.error(err)
