@@ -17,30 +17,26 @@
     </el-row>
 </template>
 
-<script lang="ts" setup>
+<script setup>
 import ContentSkeleton from './components/ContentSkeleton.vue';
-import { onMounted, ref, provide } from 'vue'
-import { ElMessage } from 'element-plus'
+import { onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import PageHeader from './components/PageHeader.vue';
 import DetailContent from './components/DetailContent.vue';
-import axios from 'axios'
+import { getDetails } from '@/api/notices.js'
 
 const route = useRoute()
 const loading = ref(true)
 const noticeData = ref()
 const getData = () => {
-    setTimeout(() => {
-        axios.get(`http://localhost:3000/notice?id=${route.params.Nid}`)
-            .then(res => {
-                noticeData.value = res.data[0]
+    getDetails(route.params.Nid)
+        .then(res => {
+            if (res.data.code === 200) {
+                noticeData.value = res.data.data
                 loading.value = false
-            })
-            .catch(err => {
-                ElMessage.error(err)
-                console.log(err)
-            })
-    }, 1000)
+            }
+        })
+        .catch(err => console.log(err))
 }
 onMounted(() => {
     getData()

@@ -2,10 +2,8 @@
     <SelfInfoSkeleton :loading="loading">
         <el-form ref="formRef" :model="form" label-width="120px" label-position="left" :rules="rules" status-icon
             :size="formSize" require-asterisk-position="right">
-            <el-form-item label="学号" required>
-                <span class="text">{{ store.isTeacher ? store.userInformation.jobNumber :
-                    store.userInformation.studentNumber }}</span>
-                <!-- <span class="edit-button"><el-button type="primary" plain :icon="EditPen">编辑</el-button></span> -->
+            <el-form-item :label="store.role === '1' ? '学号' : '工号'" required>
+                <span class="text">{{ informationData?.username }}</span>
                 <span v-if="!isEdit" class="edit-button" @click="handleEdit">
                     <el-icon>
                         <EditPen />
@@ -20,24 +18,23 @@
                 </span>
             </el-form-item>
             <el-form-item label="姓名" required>
-                <span class="text">{{ informationData?.name }}</span>
+                <span class="text">{{ informationData?.nickname }}</span>
             </el-form-item>
             <el-form-item label="学院" required>
-                <span class="text">{{ informationData?.department }}</span>
+                <span class="text">{{ informationData?.college }}</span>
             </el-form-item>
-            <el-form-item label="专业" required>
+            <el-form-item label="专业" required v-if="store.role === '1'">
                 <span class="text">{{ informationData?.major }}</span>
             </el-form-item>
-            <el-form-item :label="store.isTeacher ? '职称' : '年级'" required>
-                <span class="text">{{ store.isTeacher ? informationData?.position : informationData?.grade }}</span>
+            <el-form-item label="年级" required v-if="store.role === '1'">
+                <span class="text">{{ informationData?.grade }}</span>
             </el-form-item>
-            <el-form-item label="昵称" prop="nickname">
-                <span v-if="!isEdit" class="text">{{ form.nickname }}</span>
-                <el-input v-if="isEdit" v-model="form.nickname" />
+            <el-form-item label="班级" required v-if="store.role === '1'">
+                <span class="text">{{ informationData?.cla + '班' }}</span>
             </el-form-item>
-            <el-form-item label="手机号" prop="phoneNumber">
-                <span v-if="!isEdit" class="text">{{ form.phoneNumber }}</span>
-                <el-input v-if="isEdit" v-model="form.phoneNumber" />
+            <el-form-item label="手机号" prop="tel">
+                <span v-if="!isEdit" class="text">{{ form.tel }}</span>
+                <el-input v-if="isEdit" v-model="form.tel" />
             </el-form-item>
             <el-form-item label="电子邮箱" prop="email">
                 <span v-if="!isEdit" class="text">{{ form.email }}</span>
@@ -51,67 +48,58 @@
     </SelfInfoSkeleton>
 </template>
   
-<script lang="ts" setup>
+<script setup>
 import SelfInfoSkeleton from './SelfInfoSkeleton.vue'
 import { reactive, ref, onMounted } from 'vue'
 import { EditPen, Right } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 import { useRouter } from 'vue-router'
-import axios from 'axios'
-import validator from '../../validator/name/index'
-import useUserStore from '../../../../store/userStore'
+import { changeInfo, getInfo } from '@/api/information.js'
+import useLoginStore from '@/store/loginStore';
 
-const store = useUserStore()
+const store = useLoginStore()
 const loading = ref(true)
-const informationData = ref<{
-    studentNumber: string,
-    name: string,
-    major: string,
-    department: string,
-    grade: string,
-    id: Number,
-    [propsName: string]: any
-}>()
+const informationData = ref({
+    username: '',
+    nickname: '',
+    major: '',
+    college: '',
+    grade: '',
+    cla: '',
+})
 const getData = () => {
-    setTimeout(() => {
-        axios.get(`http://localhost:3000/${store.isTeacher ? "teaUsers" : "users"}?username=${store.isTeacher ? store.userInformation.jobNumber : store.userInformation.studentNumber}`)
-            .then(res => {
-                informationData.value = res.data[0]
-                form.nickname = res.data[0].nickname
-                form.phoneNumber = res.data[0].phoneNumber
-                form.email = res.data[0].email
+    getInfo()
+        .then(res => {
+            if (res.data.code === 200) {
+                informationData.value = res.data.data
+                form.email = res.data.data.email
+                form.tel = res.data.data.tel
                 loading.value = false
-            })
-            .catch(err => {
-                ElMessage.error(err)
-                console.log(err)
-            })
-    }, 1000)
+            }
+        })
+        .catch(err => console.log(err))
 }
 onMounted(() => {
     getData()
 })
 const router = useRouter()
 const form = reactive({
-    nickname: '',
-    phoneNumber: '',
+    tel: '',
     email: '',
 })
 const formRef = ref()
-const nameValidator = (rule: any, value: any, callback: any) => validator(rule, value, callback, 5)
-const phoneNumberValidator = (rule: any, value: any, callback: any) => {
+const phoneNumberValidator = (rule, value, callback) => {
     if (!/^(0|\+86|17951)?(13[0-9]|15[012356789]|166|17[3678]|18[0-9]|14[57])[0-9]{8}$/.test(value))
         callback(new Error("请检查号码是否正确"));
     else callback();
 }
-const emailValidator = (rule: any, value: any, callback: any) => {
+const emailValidator = (rule, value, callback) => {
     if (!/\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*/.test(value))
         callback(new Error("请检查邮箱地址是否正确"));
     else callback();
 }
 const rules = reactive({
-    nickname: [{ required: false, validator: nameValidator, trigger: 'blur' }],
-    phoneNumber: [{ required: false, validator: phoneNumberValidator, trigger: 'blur' }],
+    tel: [{ required: false, validator: phoneNumberValidator, trigger: 'blur' }],
     email: [{ required: false, validator: emailValidator, trigger: 'blur' }]
 })
 const formSize = ref('')
@@ -124,42 +112,22 @@ const handleChangePassword = () => {
     router.push("/settings")
 }
 const submitEdit = () => {
-    if (form.nickname !== '' && form.phoneNumber !== '' && form.email !== '')
-        formRef.value.validate().then(res => {
-            axios.patch(`http://localhost:3000/${store.isTeacher ? "teaUsers" : "users"}/${informationData.value!.id}`, {
-                nickname: form.nickname,
-                phoneNumber: form.phoneNumber,
-                email: form.email
-            })
-                .then(res => {
-                    isEdit.value = false
-                    getData()
-                    ElMessage.success("保存成功")
-                })
-                .catch(err => {
-                    ElMessage.error(err)
-                    console.log(err)
-                })
-        }).catch(err => {
-            ElMessage.error("请正确填写个人信息")
-        })
-    else {
-        formRef.value.clearValidate()
-        axios.patch(`http://localhost:3000/${store.isTeacher ? "teaUsers" : "users"}/${informationData.value!.id}`, {
-            nickname: form.nickname,
-            phoneNumber: form.phoneNumber,
-            email: form.email
-        })
-            .then(res => {
+    changeInfo({
+        email: form.email,
+        tel: form.tel
+    })
+        .then(res => {
+            if (res.data.code === 200) {
                 isEdit.value = false
+                loading.value = true
                 getData()
                 ElMessage.success("保存成功")
-            })
-            .catch(err => {
-                ElMessage.error(err)
-                console.log(err)
-            })
-    }
+            }
+        })
+        .catch(err => {
+            console.log(err)
+            ElMessage.error(err)
+        })
 }
 const cancelEdit = () => {
     isEdit.value = false

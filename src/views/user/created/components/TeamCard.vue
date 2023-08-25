@@ -3,8 +3,9 @@
         <template #header>
             <div class="card-header">
                 <span class="card-header-title">
-                    <span><img :src="data!.logo.url" :alt="data!.name" width="25"></span>
-                    {{ data!.name }}
+                    <span><img :src="data?.logoUrl ? data?.logoUrl : 'src/assets/team.png'" :alt="data?.groupname"
+                            width="25"></span>
+                    {{ data?.groupname }}
                 </span>
                 <span>
                     <el-button type="primary" :icon="Edit" circle @click="handleEdit"></el-button>
@@ -12,20 +13,41 @@
                 </span>
             </div>
         </template>
-        <div class="text item">
-            <el-tag>团队介绍：</el-tag>
-            {{ data!.desc }}
+        <div class="item">
+            <el-tag size="large" round hit @click="viewMatchDetail" class="tag-button">
+                <div style="display: flex;align-items: center;">
+                    查看参赛信息
+                    <el-icon>
+                        <ArrowRightBold />
+                    </el-icon>
+                </div>
+            </el-tag>
+        </div>
+        <div class="item">
+            <el-tag size="large" round hit @click="viewAwardRecord" class="tag-button" type="warning">
+                <div style="display: flex;align-items: center;">
+                    查看获奖记录
+                    <el-icon>
+                        <ArrowRightBold />
+                    </el-icon>
+                </div>
+            </el-tag>
         </div>
     </el-card>
+    <MatchDetails v-model="isViewMatch" :id="id"></MatchDetails>
+    <AwardRecord v-model="isViewAward" :id="id"></AwardRecord>
     <EditTeam v-model="isEdit" :id="id"></EditTeam>
 </template>
 
-<script lang="ts" setup>
+<script setup>
 import { ref } from 'vue'
+import { ArrowRightBold } from '@element-plus/icons-vue'
 import EditTeam from './EditTeam/EditTeam.vue'
+import MatchDetails from './MatchDetails.vue'
+import AwardRecord from './AwardRecord.vue'
 import { Delete, Edit } from '@element-plus/icons-vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import axios from 'axios';
+import { deleteTeam } from '@/api/team.js'
 
 const props = defineProps({
     data: {
@@ -35,7 +57,7 @@ const props = defineProps({
         type: Number
     }
 })
-const emit = defineEmits(['getNewData'])
+const emit = defineEmits(['getData'])
 const handleDelete = () => {
     ElMessageBox.confirm(
         '确认删除该团队吗? 删除后不可恢复!',
@@ -47,14 +69,10 @@ const handleDelete = () => {
         }
     )
         .then(() => {
-            axios.delete(`http://localhost:3000/teams/${props!.id}`)
-                .then(res => {
-                    emit('getNewData', "delete")
-                })
-                .catch(err => {
-                    console.error(err)
-                    ElMessage.error(err)
-                })
+            deleteTeam(props.id).then(res => {
+                ElMessage.success(res.data.data)
+                emit('getData')
+            }).catch(err => console.log())
         })
         .catch(() => {
             ElMessage.info("取消删除")
@@ -63,6 +81,16 @@ const handleDelete = () => {
 const isEdit = ref(false)
 const handleEdit = () => {
     isEdit.value = true
+}
+
+const isViewMatch = ref(false)
+const viewMatchDetail = () => {
+    isViewMatch.value = true
+}
+
+const isViewAward = ref(false)
+const viewAwardRecord = () => {
+    isViewAward.value = true
 }
 </script>
 <style lang="scss" scoped>
@@ -81,10 +109,6 @@ const handleEdit = () => {
     }
 }
 
-.text {
-    font-size: 14px;
-}
-
 .item {
     margin-bottom: 18px;
 }
@@ -93,6 +117,17 @@ const handleEdit = () => {
     width: 350px;
     height: 230px;
     margin: 10px 20px;
+}
+
+.tag-button {
+    transition: .4s;
+}
+
+.tag-button:hover {
+    cursor: pointer;
+    transform: translate(10px);
+    background-color: #ffffff;
+    transition: .4s;
 }
 </style>
   

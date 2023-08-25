@@ -1,6 +1,6 @@
 import { createRouter, createWebHashHistory } from "vue-router";
 import NotFound from "../components/NotFound/index.vue";
-import useUserStore from "../store/userStore";
+import useLoginStore from "../store/loginStore";
 
 const routes = [
   {
@@ -25,10 +25,6 @@ const routes = [
       },
       {
         path: "checkSignUp",
-        component: () => import("../views/competition/checkSignUp/index.vue"),
-      },
-      {
-        path: "checkSignUp/details/:Sid",
         component: () => import("../views/competition/checkDetails/index.vue"),
       },
       {
@@ -76,19 +72,13 @@ const routes = [
         component: () => import("../views/user/joined/index.vue"),
       },
       {
-        path: "goldMedal",
-        component: () => import("../views/user/goldMedal/index.vue"),
-      },
-      {
         path: "message",
         component: () => import("../views/user/message/index.vue"),
         children: [
           {
             path: "messageContent/:Mid",
             component: () =>
-              import(
-                "../views/user/message/components/MessageContent/index.vue"
-              ),
+              import("../views/user/message/components/InviteMessage.vue"),
           },
         ],
       },
@@ -124,13 +114,13 @@ const router = createRouter({
   routes,
 });
 router.beforeEach(async (to, from, next) => {
-  const store = useUserStore();
-  let isAuthenticated = await localStorage.getItem("loginToken");
-  if (to.path !== "/login" && isAuthenticated !== "successful login")
+  const store = useLoginStore();
+  let isAuthenticated = await localStorage.getItem("Token");
+  if (to.path !== "/login" && !isAuthenticated && !store.isLogin)
     next({
       path: "/login",
     });
-  else if (to.path === "/user/created" && store.isTeacher)
+  else if (to.path === "/user/created" && store.role === "2")
     next({
       path: "/user/guided",
     });

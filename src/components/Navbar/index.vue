@@ -8,29 +8,22 @@
             <el-menu-item index="/competition"><span>竞赛信息</span></el-menu-item>
             <el-menu-item index="/notice"><span>系统公告</span></el-menu-item>
             <div class="flex-grow" />
-            <UnLoginUser v-if="!store.isLogged"></UnLoginUser>
+            <UnLoginUser v-if="!store.isLogin"></UnLoginUser>
             <LoginUser v-else></LoginUser>
         </el-menu>
     </el-affix>
 </template>
 
 <script setup>
-import { onMounted, computed, inject } from 'vue'
+import { computed } from 'vue'
 import Logo from "./components/Logo.vue"
 import LoginUser from './components/LoginUser.vue'
 import UnLoginUser from "./components/UnLoginUser.vue";
-import { useRoute, useRouter } from "vue-router"
-import useLoginStore from '../../store/loginStore';
-const store = useLoginStore()
-// const isLogged = inject("isLogged")
-const route = useRoute()
-const router = useRouter()
-onMounted(() => {
-    if (!store.isLogged) {
-        router.push('/login')
-    }
+import { useRoute } from "vue-router"
+import useLoginStore from '@/store/loginStore';
 
-})
+const store = useLoginStore()
+const route = useRoute()
 const defaultActive = computed(() => {
     return '/' + route.fullPath.split("/")[1]
 })

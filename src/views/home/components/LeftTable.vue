@@ -2,8 +2,8 @@
     <LeftSkeleton :loading="loading">
         <el-table class="table-box" :data="tableData" stripe @row-click="handleClick($event)" :show-overflow-tooltip="true"
             :default-sort="{ prop: 'startDate', order: 'ascending' }">
-            <el-table-column prop="startDate" sortable label="开始日期" width="110" />
-            <el-table-column prop="name" label="比赛名称" />
+            <el-table-column prop="starttime" sortable label="开始日期" width="110" />
+            <el-table-column prop="matchname" label="比赛名称" />
         </el-table>
     </LeftSkeleton>
 </template>
@@ -11,27 +11,26 @@
 <script setup>
 import LeftSkeleton from './LeftSkeleton.vue'
 import { ElMessage } from 'element-plus';
-import axios from 'axios';
+import { getCompetitions } from '@/api/competitions';
 import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router'
 const tableData = ref([])
 const loading = ref(true)
 onMounted(() => {
-    setTimeout(() => {
-        axios.get("http://localhost:3000/competitions?_limit=5")
-            .then(res => {
-                tableData.value = res.data
-                loading.value = false
+    getCompetitions(1)
+        .then(res => {
+            tableData.value = res.data.data
+            tableData.value = tableData.value.map(item => {
+                item.starttime = item.starttime.split('T')[0]
+                return item
             })
-            .catch(err => {
-                console.error(err)
-                ElMessage.error(err)
-            })
-    }, 1000)
+            loading.value = false
+        })
+        .catch(err => console.error(err))
 })
 const router = useRouter()
 const handleClick = (evt) => {
-    router.push(`/competition/details/${evt.id}`)
+    router.push(`/competition/competitions/details/${evt.id}&${evt.matchstate}`)
 }
 </script>
 
@@ -39,6 +38,7 @@ const handleClick = (evt) => {
 ::v-deep .el-table__row {
     cursor: pointer;
 }
+
 .table-box {
     border-radius: 5px;
 }

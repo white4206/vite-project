@@ -15,10 +15,9 @@
     </div>
 </template>
   
-<script setup lang="ts">
+<script setup>
 import { UploadFilled } from '@element-plus/icons-vue'
 import { ref } from 'vue'
-import type { UploadProps } from 'element-plus'
 
 const props = defineProps({
     files: {
@@ -28,7 +27,7 @@ const props = defineProps({
 const emit = defineEmits(['uploadFile'])
 const uploadFiles = ref(props.files)
 const uploadRef = ref()
-const handleChange: UploadProps['onChange'] = (rawFile, rawFileList) => {
+const handleChange = (rawFile, rawFileList) => {
 
     if (rawFileList.length > 1) {
         rawFileList.splice(0, 1);

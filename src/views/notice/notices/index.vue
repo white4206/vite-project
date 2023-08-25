@@ -1,11 +1,4 @@
 <template>
-    <!-- <el-row justify="center" class="content">
-        <el-col :span="18">
-            <div class="grid-content">
-                <Swiper></Swiper>
-            </div>
-        </el-col>
-    </el-row> -->
     <el-row justify="center" class="content">
         <el-col :span="18">
             <div class="grid-content">
@@ -15,13 +8,15 @@
     </el-row>
     <el-row justify="center" class="content">
         <el-col :span="18">
-            <el-row justify="space-between" :gutter="25">
-                <el-col :span="6" v-for="(item, index) in 4" :key="item.id" @click="handleClick(1)">
-                    <div class="grid-content">
-                        <ImgCard></ImgCard>
-                    </div>
-                </el-col>
-            </el-row>
+            <ImgCardSkeleton :loading="loading">
+                <el-row :gutter="25">
+                    <el-col :span="6" v-for="(item, index) in specialNotices" :key="item.id" @click="handleClick(item.id)">
+                        <div class="grid-content" v-if="index < 4">
+                            <ImgCard :data="item"></ImgCard>
+                        </div>
+                    </el-col>
+                </el-row>
+            </ImgCardSkeleton>
         </el-col>
     </el-row>
     <el-row justify="center" class="content">
@@ -32,11 +27,6 @@
         </el-col>
     </el-row>
     <el-row justify="center" :gutter="20" class="content">
-        <!-- <el-col :span="6">
-            <div class="grid-content">
-                <ImgCard></ImgCard>
-            </div>
-        </el-col> -->
         <el-col :span="18">
             <div class="grid-content">
                 <NoticeContent></NoticeContent>
@@ -48,11 +38,28 @@
 <script setup>
 import ImgCard from './components/ImgCard.vue'
 import NoticeContent from './components/NoticeContent.vue';
-import { ref } from 'vue'
+import ImgCardSkeleton from './components/ImgCardSkeleton.vue';
 import { useRouter } from 'vue-router'
+import { ref, onMounted } from 'vue'
+import { getNotices } from '@/api/notices.js'
 
-const ImgCardData = ref([])
 const router = useRouter()
+const loading = ref(true)
+const specialNotices = ref([])
+onMounted(() => {
+    getNotices(1)
+        .then(res => {
+            if (res.data.code === 200) {
+                specialNotices.value = res.data.data
+                specialNotices.value = specialNotices.value.map(item => {
+                    item.createtime = item.createtime.split(' ')[0]
+                    return item
+                })
+                loading.value = false
+            }
+        })
+        .catch(err => console.error(err))
+})
 const handleClick = (id) => {
     router.push(`/notice/details/${id}`)
 }

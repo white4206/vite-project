@@ -1,24 +1,25 @@
 <template>
     <el-row justify="center">
-        <el-col :span="store.isTeacher ? 16 : 12">
-            <div class="top-content" v-if="!store.isTeacher">
+        <el-col :span="store.role === '2' ? 16 : 12">
+            <div class="top-content" v-if="store.role === '1'">
                 <h1>竞赛列表</h1>
             </div>
         </el-col>
-        <el-col :span="store.isTeacher ? 8 : 6">
+        <el-col :span="store.role === '2' ? 8 : 6">
             <div class="top-content">
                 <el-input v-model="search" size="default" placeholder="搜索比赛名称" :suffix-icon="Search" />
             </div>
         </el-col>
     </el-row>
     <el-row justify="center">
-        <el-col :span="store.isTeacher ? 24 : 18">
+        <el-col :span="store.role === '2' ? 24 : 18">
             <div class="competition-box" v-loading="loading">
                 <PageSkeleton :loading="firstLoading">
                     <template v-if="JSON.stringify(filterCompetitionData) !== '[]'">
                         <el-row v-for="(item, index) in filterCompetitionData" :key="item.id" justify="center">
                             <el-col>
-                                <el-card class="competition-card" shadow="hover" @click="handleClick(item.id)">
+                                <el-card class="competition-card" shadow="hover"
+                                    @click="handleClick(item.id, item.matchstate)">
                                     <div class="grid-content">
                                         <CompetitionCard :data="item"></CompetitionCard>
                                     </div>
@@ -40,12 +41,13 @@
         </el-col>
     </el-row>
     <el-row justify="center">
-        <el-col :span="store.isTeacher ? 24 : 18">
+        <el-col :span="store.role === '2' ? 24 : 18">
             <el-row justify="center">
                 <el-col>
                     <el-card class="pagination-card" shadow="never">
-                        <el-pagination background layout="prev, pager, next" :default-page-size="5" :total="totalCount"
-                            v-model:current-page="currentPage" @update:current-page="handlePageChange" />
+                        <el-pagination background layout="prev, pager, next" :pager-count="9" :default-page-size="10"
+                            :total="totalCount" v-model:current-page="currentPage"
+                            @update:current-page="handlePageChange" />
                     </el-card>
                 </el-col>
             </el-row>
@@ -53,43 +55,36 @@
     </el-row>
 </template>
 
-<script lang="ts" setup>
+<script setup>
 import PageSkeleton from './components/PageSkeleton.vue';
 import CompetitionCard from './components/CompetitionCard.vue';
-import { ElMessage } from 'element-plus'
 import { Search } from '@element-plus/icons-vue'
-import useUserStore from '../../../store/userStore'
 import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
-import axios from 'axios'
+import { getCompetitions } from '@/api/competitions.js'
+import useLoginStore from '@/store/loginStore';
 
-
-const store = useUserStore()
+const store = useLoginStore()
 const loading = ref(false)
 const firstLoading = ref(true)
-const competitionData = ref<{
-    startDate: string,
-    finishDate: string,
-    name: string,
-    desc: string,
-    id: number,
-}[]>()
+const competitionData = ref([])
 const totalCount = ref(0)
 const getData = (page = 1) => {
-    setTimeout(() => {
-        axios.get(`http://localhost:3000/competitions?_page=${page}&_limit=5`)
-            .then(res => {
-                totalCount.value = Number(res.headers["x-total-count"])
-                competitionData.value = res.data
+    getCompetitions(page)
+        .then(res => {
+            if (res.data.code === 200) {
+                competitionData.value = res.data.data
+                competitionData.value = competitionData.value?.map(item => {
+                    item.starttime = item.starttime.split('T')[0]
+                    item.deadline = item.deadline.split('T')[0]
+                    return item
+                })
+                totalCount.value = Number(res.data.msg.split(":")[1])
                 firstLoading.value = false
                 loading.value = false
-            })
-            .catch(err => {
-                console.error(err)
-                ElMessage.error(err)
-            })
-
-    }, 1000)
+            }
+        })
+        .catch(err => console.error(err))
 }
 onMounted(() => {
     getData()
@@ -102,16 +97,16 @@ const handlePageChange = () => {
 }
 const search = ref('')
 const filterCompetitionData = computed(() => {
-    return competitionData.value!.filter(
+    return competitionData.value?.filter(
         (data) =>
             !search.value ||
-            data.name.toLowerCase().includes(search.value.toLowerCase())
+            data.matchname.toLowerCase().includes(search.value.toLowerCase())
     )
 }
 )
 const router = useRouter()
-const handleClick = (id) => {
-    router.push(`/competition/competitions/details/${id}`)
+const handleClick = (id, state) => {
+    router.push(`/competition/competitions/details/${id}&${state}`)
 }
 </script>
 
@@ -139,6 +134,7 @@ const handleClick = (id) => {
     color: #95c7f4;
     padding-bottom: 20px;
     // margin-top: 50px;
+    user-select: none;
 }
 
 .competition-card {

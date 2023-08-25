@@ -1,226 +1,160 @@
 <template>
-    <el-row justify="center">
-        <el-col :span="24">
-            <div class="grid-content">
-                <PageHeader></PageHeader>
-            </div>
-        </el-col>
-    </el-row>
-    <el-row justify="center">
-        <el-col :span="24">
-            <div class="table-box">
-                <div class="table-title-box">
-                    <div>
-                        已选中 {{ selectionItems.length }} 条
-                    </div>
-                    <div>
-                        <el-button size="default" circle plain :icon="Select" type="primary"
-                            @click="handleAllPass"></el-button>
-                        批量通过
-                        <el-button size="default" circle plain :icon="CloseBold" type="danger"
-                            @click="handleAllTurnDown"></el-button>
-                        批量拒绝
-                    </div>
+    <div>
+        <el-row justify="center">
+            <el-col :span="24">
+                <div class="grid-content">
+                    <PageHeader></PageHeader>
                 </div>
-                <el-table ref="multipleTableRef" :data="filterTableData" style="width: 100%"
-                    @selection-change="handleSelectionChange" stripe v-loading="loading">
-                    <el-table-column type="selection" width="55" />
-                    <el-table-column property="name" label="团队名" width="120" />
-                    <el-table-column property="leader.name" label="队长" width="120" />
-                    <el-table-column label="报名附件" width="225" show-overflow-tooltip>
-                        <template #default="scope">
-                            <el-link :icon="Link" :underline="true">{{ scope.row.file.name }}</el-link>
-                        </template>
-                    </el-table-column>
-                    <el-table-column property="desc" label="备注" show-overflow-tooltip>
-                    </el-table-column>
-                    <el-table-column width="225" align="center">
-                        <template #header>
-                            <el-input v-model="search" size="small" placeholder="Type to search" />
-                        </template>
-                        <template #default="scope">
-                            <el-button size="small" type="primary" @click="handlePass(scope.row)">通过</el-button>
-                            <el-button size="small" type="danger" @click="handleTurnDown(scope.row)">拒绝</el-button>
-                        </template>
-                    </el-table-column>
-                </el-table>
-            </div>
-        </el-col>
-    </el-row>
+            </el-col>
+        </el-row>
+        <el-row justify="center">
+            <el-col :span="24">
+                <div class="table-box">
+                    <div class="table-title-box">
+                        <div>
+                            已选中 {{ selectionItems.length }} 条
+                        </div>
+                    </div>
+                    <el-table ref="multipleTableRef" :data="filterTableData" style="width: 100%"
+                        @selection-change="handleSelectionChange" stripe v-loading="loading">
+                        <el-table-column type="selection" width="55" />
+                        <el-table-column property="matchname" label="比赛名" width="120" />
+                        <el-table-column property="gruopname" label="团队名" width="120" />
+                        <el-table-column property="leadername" label="队长" width="120" />
+                        <el-table-column label="报名附件">
+                            <template #default="scope">
+                                <el-link :icon="Link" :underline="true" target="_blank"
+                                    :href="'http://140.143.139.167' + scope.row.signfile">{{ scope.row.filename }}</el-link>
+                            </template>
+                        </el-table-column>
+                        <el-table-column width="225" align="center">
+                            <template #header>
+                                <el-input v-model="search" size="small" placeholder="搜索报名信息" />
+                            </template>
+                            <template #default="scope">
+                                <el-button size="small" type="primary" @click="handlePass(scope.row.id)">通过</el-button>
+                                <el-button size="small" type="danger" @click="openConfirm(scope.row.id)">拒绝</el-button>
+                            </template>
+                        </el-table-column>
+                    </el-table>
+                </div>
+            </el-col>
+        </el-row>
+        <el-dialog v-model="isTurnDown" title="审核不通过" width="30%" align-center>
+            <el-form :model="form" label-position="top" ref="formRef" :rules="rules">
+                <el-form-item label="反馈信息" prop="feedback">
+                    <el-input v-model="form.feedback" />
+                </el-form-item>
+            </el-form>
+            <template #footer>
+                <span class="dialog-footer">
+                    <el-button @click="handleCancel">Cancel</el-button>
+                    <el-button type="primary" @click="handleTurnDown">
+                        Confirm
+                    </el-button>
+                </span>
+            </template>
+        </el-dialog>
+    </div>
 </template>
 
-<script lang="ts" setup>
+<script setup>
 import PageHeader from './components/PageHeader.vue'
 import { computed, onMounted, ref } from 'vue'
-import axios from 'axios'
 import { ElMessage } from 'element-plus'
-import { Link, Select, CloseBold } from '@element-plus/icons-vue'
-import { useRoute } from 'vue-router'
-import useUserStore from '../../../store/userStore'
+import { Link } from '@element-plus/icons-vue'
+import { waitCheck, teamDetail, handleCheck } from '@/api/checkSignUp';
 
+const tableData = ref([])
+const loading = ref(true)
+const getData = () => {
+    waitCheck()
+        .then(res => {
+            if (res.data.code === 200) {
+                tableData.value = res.data.data
+                if (JSON.stringify(tableData.value) !== '[]')
+                    tableData.value.map(tableItem => {
+                        teamDetail(tableItem.groupid)
+                            .then(res => {
+                                if (res.data.code === 200) {
+                                    tableItem.gruopname = res.data.data.gruopname
+                                    res.data.data.stumember.map(teamItem => {
+                                        if (teamItem.manager === 1) {
+                                            tableItem.leadername = teamItem.membername
+                                        }
+                                    })
+                                    loading.value = false
+                                }
+                            })
+                            .catch(err => console.log(err))
+                    })
+                else
+                    loading.value = false
 
-const store = useUserStore()
-const route = useRoute()
-const tableData = ref<{
-    name: string,
-    leader: object,
-    desc: string,
-    file: object
-}[]>([])
+            }
+        })
+        .catch(err => console.log(err))
+}
+onMounted(() => {
+    getData()
+})
 const search = ref('')
 const filterTableData = computed(() =>
     tableData.value?.filter(
         (data) =>
             !search.value ||
-            data.name.toLowerCase().includes(search.value.toLowerCase())
+            data.matchname.toLowerCase().includes(search.value.toLowerCase())
     )
 )
-const loading = ref(true)
-const getData = () => {
-    tableData.value = []
-    setTimeout(() => {
-        axios.get(`http://localhost:3000/competitions?id=${route.params.Sid}`)
-            .then(res => {
-                res.data[0].signUpList.map(item => {
-                    let tempCheckTeamData = {
-                        name: "",
-                        leader: {},
-                        desc: "",
-                        file: {}
-                    }
-                    axios.get(`http://localhost:3000/teams?id=${item.teamId}`)
-                        .then(res => {
-                            if (item.signUpStatus === 'waiting' && res.data[0].teacher.id === store.userInformation.id) {
-                                tempCheckTeamData.desc = item.desc
-                                tempCheckTeamData.file = item.file
-                                tempCheckTeamData.name = res.data[0].name
-                                tempCheckTeamData.leader = res.data[0].leader
-                                tableData.value!.push(tempCheckTeamData)
-                                loading.value = false
-                            }
-                        })
-                        .catch(err => {
-                            ElMessage.error(err)
-                            console.log(err)
-                        })
-                })
-            })
-            .catch(err => {
-                ElMessage.error(err)
-                console.log(err)
-            })
-    }, 1000)
+const handlePass = (signid) => {
+    handleCheck(signid, {
+        status: 1
+    })
+        .then(res => {
+            console.log(res)
+            getData()
+            ElMessage.success("通过报名申请")
+        })
+        .catch(err => console.log(err))
 }
-onMounted(() => {
-    getData()
+const signId = ref()
+const openConfirm = (signid) => {
+    isTurnDown.value = true
+    signId.value = signid
+}
+const form = ref({
+    feedback: ""
 })
-const handlePass = (row) => {
-    axios.get(`http://localhost:3000/competitions?id=${route.params.Sid}`)
-        .then(res => {
-            let tempSignUpList = res.data[0].signUpList
-            tempSignUpList.forEach(item => {
-                if (item.leaderId === row.leader.id)
-                    item.signUpStatus = "checking"
-            })
-            axios.patch(`http://localhost:3000/competitions/${route.params.Sid}`, {
-                signUpList: tempSignUpList
-            })
-                .then(res => {
-                    getData()
-                    ElMessage.success("通过报名申请")
-                })
-                .catch(err => {
-                    ElMessage.error(err)
-                    console.log(err)
-                })
+const formRef = ref()
+const isTurnDown = ref(false)
+const rules = ref({
+    feedback: { required: true, message: '请输入反馈信息', trigger: 'blur' }
+})
+const handleTurnDown = () => {
+    formRef.value.validate().then(res => {
+        handleCheck(signId.value, {
+            feedback: form.value.feedback,
+            status: -1
         })
+            .then(res => {
+                console.log(res)
+                getData()
+                ElMessage.warning("拒绝报名申请")
+            })
+            .catch(err => console.log(err))
+    }).catch(err => {
+        ElMessage.error("请填写反馈信息")
+    })
 }
-const handleTurnDown = (row) => {
-    axios.get(`http://localhost:3000/competitions?id=${route.params.Sid}`)
-        .then(res => {
-            let tempSignUpList = res.data[0].signUpList
-            tempSignUpList.forEach(item => {
-                if (item.leaderId === row.leader.id)
-                    item.signUpStatus = "teacherTurnDown"
-            })
-            axios.patch(`http://localhost:3000/competitions/${route.params.Sid}`, {
-                signUpList: tempSignUpList
-            })
-                .then(res => {
-                    getData()
-                    ElMessage.warning("拒绝报名申请")
-                })
-                .catch(err => {
-                    ElMessage.error(err)
-                    console.log(err)
-                })
-        })
+
+const handleCancel = () => {
+    isTurnDown.value = false
+    formRef.value.resetFields()
+    ElMessage.info("取消操作")
 }
 const selectionItems = ref([])
 const handleSelectionChange = (val) => {
     selectionItems.value = val
-}
-const handleAllPass = () => {
-    let tempSignUpList: object[] = []
-    selectionItems.value.map((row: any) => {
-        axios.get(`http://localhost:3000/competitions?id=${route.params.Sid}`)
-            .then(res => {
-                res.data[0].signUpList.forEach(item => {
-                    if (item.leaderId === row.leader.id) {
-                        item.signUpStatus = "checking"
-                        tempSignUpList.push(item)
-                    }
-                })
-                console.log(tempSignUpList)
-                axios.patch(`http://localhost:3000/competitions/${route.params.Sid}`, {
-                    signUpList: tempSignUpList
-                })
-                    .then(res => {
-                        getData()
-                    })
-                    .catch(err => {
-                        ElMessage.error(err)
-                        console.log(err)
-                    })
-            })
-            .catch(err => {
-                ElMessage.error(err)
-                console.log(err)
-            })
-    })
-    if (JSON.stringify(selectionItems.value) !== '[]')
-        ElMessage.success("批量通过报名申请")
-}
-const handleAllTurnDown = () => {
-    let tempSignUpList: object[] = []
-    selectionItems.value.map((row: any) => {
-        axios.get(`http://localhost:3000/competitions?id=${route.params.Sid}`)
-            .then(res => {
-                res.data[0].signUpList.forEach(item => {
-                    if (item.leaderId === row.leader.id) {
-                        item.signUpStatus = "teacherTurnDown"
-                        tempSignUpList.push(item)
-                    }
-                })
-                console.log(tempSignUpList)
-                axios.patch(`http://localhost:3000/competitions/${route.params.Sid}`, {
-                    signUpList: tempSignUpList
-                })
-                    .then(res => {
-                        getData()
-                    })
-                    .catch(err => {
-                        ElMessage.error(err)
-                        console.log(err)
-                    })
-            })
-            .catch(err => {
-                ElMessage.error(err)
-                console.log(err)
-            })
-    })
-    if (JSON.stringify(selectionItems.value) !== '[]')
-        ElMessage.warning("批量拒绝报名申请")
 }
 </script>
 

@@ -1,69 +1,71 @@
 <template>
-    <div class="message-box">
+    <div class="message-box" v-loading="loading">
         <div class="message-content-box">
             <el-row justify="space-around">
                 <el-col :span="8">
                     <div class="messageList-box">
-                        <Sidebar :data="messageData"></Sidebar>
-                        <Pagination :messageCount="totalCount"></Pagination>
+                        <div v-if="JSON.stringify(messageData) !== '[]'">
+                            <Sidebar :data="messageData"></Sidebar>
+                        </div>
+                        <el-empty description="暂无消息" style="height: 640px;" v-else>
+                        </el-empty>
                     </div>
                 </el-col>
                 <el-col :span="16">
                     <div>
-                        <router-view></router-view>
+                        <router-view :data="messageData" @getData="handleGetData" v-if="!isShowMessageLogo"></router-view>
                     </div>
+                    <el-empty description=" " style="height: 640px;" v-if="isShowMessageLogo">
+                        <template #image>
+                            <el-icon :size="175">
+                                <Promotion />
+                            </el-icon>
+                        </template>
+                    </el-empty>
                 </el-col>
             </el-row>
         </div>
     </div>
 </template>
-<script lang="ts" setup>
+<script setup>
 import Sidebar from './components/Sidebar.vue';
-import Pagination from './components/Pagination.vue'
-import { onMounted, ref } from 'vue'
-import axios from 'axios'
-import { ElMessage } from 'element-plus'
-import useUserStore from '../../../store/userStore'
+import { onMounted, ref, watch } from 'vue'
+import { inviteMessage } from '@/api/message.js'
+import { Promotion } from '@element-plus/icons-vue'
+import { useRoute } from 'vue-router';
+import useLoginStore from '@/store/loginStore';
 
-const store = useUserStore()
-const messageData = ref<{
-    id: number,
-    isReply: string
-}[]>([])
-const totalCount = ref()
-const getData = (page = 1) => {
-    axios.get(`http://localhost:3000/messages?_page=${page}&_limit=5`)
+const store = useLoginStore()
+const route = useRoute()
+const messageData = ref()
+const isShowMessageLogo = ref(false)
+const loading = ref(true)
+const getData = () => {
+    inviteMessage(store.role === '1' ? 'group' : 'teacher')
         .then(res => {
-            totalCount.value = Number(res.headers["x-total-count"])
-            res.data.map(item => {
-                let tempMessageData = {
-                    id: 0,
-                    isReply: ""
-                }
-                if (item.addresseeId === store.userInformation.id && UserType.value === item.type) {
-                    tempMessageData.id = item.id
-                    messageData.value.push(tempMessageData)
-                }
-                else if (store.isTeacher ? item.sender.jobNumber === store.userInformation.jobNumber : item.sender.studentNumber === store.userInformation.studentNumber && item.isReply !== 'waiting') {
-                    tempMessageData.id = item.id
-                    tempMessageData.isReply = item.isReply
-                    messageData.value.push(tempMessageData)
-                }
-            })
+            if (res.data.code === 200) {
+                messageData.value = res.data.data
+                loading.value = false
+            }
         })
-        .catch(err => {
-            ElMessage.error(err)
-            console.error(err)
-        })
+        .catch(err => console.log(err))
 }
-const UserType = ref()
-onMounted(() => {
-    if (store.userInformation.isTeacher)
-        UserType.value = 'teacher'
+watch(route, () => {
+    if (route.path === '/user/message')
+        isShowMessageLogo.value = true
     else
-        UserType.value = 'member'
+        isShowMessageLogo.value = false
+},
+    {
+        immediate: true
+    })
+onMounted(() => {
     getData()
 })
+const handleGetData = () => {
+    isShowMessageLogo.value = true
+    getData()
+}
 </script>
 <style lang="scss" scoped>
 .el-row {
@@ -84,13 +86,13 @@ onMounted(() => {
 }
 
 .message-content-box {
-    border-radius: 15px;
+    border-radius: 0 15px 15px 0;
     background-color: #FFFFFF;
-    border: 1px solid #DCDFE6;
+
 }
 
 .messageList-box {
-    border: 1px solid #F2F6FC;
+    border-right: 2px solid #F2F6FC;
 }
 </style>
   

@@ -2,11 +2,11 @@
     <RightSkeleton :loading="loading">
         <el-table class="table-box" :data="tableData" stripe @row-click="handleClick($event)" :show-overflow-tooltip="true"
             :default-sort="{ prop: 'date', order: 'ascending' }">
-            <el-table-column prop="title" label="通知公告" />
-            <el-table-column prop="date" sortable width="95" align="right">
+            <el-table-column prop="infotitle" label="通知公告" />
+            <el-table-column prop="createtime" sortable width="95" align="right">
                 <template #default="scope">
                     <div class="date-text">
-                        {{ scope.row.date }}
+                        {{ scope.row.createtime }}
                     </div>
                 </template>
             </el-table-column>
@@ -16,9 +16,8 @@
   
 <script setup>
 import RightSkeleton from './RightSkeleton.vue'
-import { ref, onMounted, onBeforeMount } from 'vue'
-import { ElMessage } from 'element-plus'
-import axios from 'axios'
+import { ref, onMounted } from 'vue'
+import { getNotices } from '@/api/notices'
 import { useRouter } from 'vue-router'
 const tableData = ref([])
 const router = useRouter()
@@ -27,17 +26,16 @@ const handleClick = (evt) => {
 }
 const loading = ref(true)
 onMounted(() => {
-    setTimeout(() => {
-        axios.get("http://localhost:3000/notice?_limit=10")
-            .then(res => {
-                tableData.value = res.data
-                loading.value = false
+    getNotices(1)
+        .then(res => {
+            tableData.value = res.data.data
+            loading.value = false
+            tableData.value = tableData.value.map(item => {
+                item.createtime = item.createtime.split(' ')[0]
+                return item
             })
-            .catch(err => {
-                console.error(err)
-                ElMessage.error(err)
-            })
-    }, 1000)
+        })
+        .catch(err => console.error(err))
 })
 </script>
 

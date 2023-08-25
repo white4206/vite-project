@@ -10,18 +10,20 @@
                     </template>
                     <el-select v-model="form.team" value-key="id" placeholder="请选择团队" size="large" :filterable="true"
                         no-match-text="未找到您的团队" no-data-text="您还没有自己的团队" :clearable="true">
-                        <el-option v-for="(item, index) in teamData" :key="item.id" :label="item.name" :value="item">
+                        <el-option v-for="(item, index) in teamData" :key="item.id" :label="item.groupname" :value="item">
                             <div class="option-item">
-                                <img :src="item.logo.url" :alt="item.name" width="25">
-                                <span>{{ item.name }}</span>
+                                <img :src="item?.logoUrl ? item?.logoUrl : 'src/assets/team.png'" :alt="item.groupname"
+                                    width="25">
+                                <span>{{ item.groupname }}</span>
                             </div>
                         </el-option>
                         <template #prefix>
-                            <img v-if="form.team" :src="form.team.logo?.url" :alt="form.team?.name" width="25">
+                            <img v-if="form.team" :src="form.team?.logoUrl ? form.team?.logoUrl : 'src/assets/team.png'"
+                                :alt="form.team?.groupname" width="25">
                         </template>
                     </el-select>
                 </el-form-item>
-                <el-form-item label="上传附件" prop="file">
+                <el-form-item label="上传附件" prop="file" required>
                     <template #label>
                         <span class="title-text">上传附件</span>
                     </template>
@@ -31,7 +33,8 @@
                     <template #label>
                         <span class="title-text">备注</span>
                     </template>
-                    <el-input v-model="form.desc" :rows="3" maxlength="100" show-word-limit type="textarea" resize="none" />
+                    <el-input v-model="form.desc" :rows="3" maxlength="100" show-word-limit type="textarea" resize="none"
+                        disabled placeholder="暂不支持提交，功能待完善" />
                 </el-form-item>
             </el-form>
         </div>
@@ -44,92 +47,66 @@
     </el-dialog>
 </template>
 
-<script lang="ts" setup>
+<script setup>
 import UploadFiles from './UploadFiles.vue'
-import { ElMessage } from 'element-plus';
-import axios from 'axios'
-import { ref, onMounted, inject } from 'vue'
-import type { Ref } from 'vue'
-import useUserStore from '../../../../store/userStore'
+import { ElMessage } from 'element-plus'
+import { ref, onMounted } from 'vue'
+import { createdTeams } from '@/api/team.js'
+import { teamSignUp } from '@/api/signUp.js'
+import { useRoute } from 'vue-router'
+import useLoginStore from '@/store/loginStore.js'
 
-const store = useUserStore()
+const store = useLoginStore()
+const route = useRoute()
 const props = defineProps({
     id: {
         type: Number
     }
 })
 const teamData = ref()
-const emit = defineEmits(['update:modelValue', 'getData'])
+const emit = defineEmits(['update:modelValue'])
 onMounted(() => {
-    axios.get(`http://localhost:3000/teams`)
-        .then(res => {
-            teamData.value = []
-            res.data.map(item => {
-                if (item.leader.studentNumber === store.userInformation.studentNumber)
-                    teamData.value?.push(item)
+    if (store.role === 1) {
+        createdTeams()
+            .then(res => {
+                if (res.data.code === 200)
+                    teamData.value = res.data.data
             })
-        })
-        .catch(err => {
-            console.error(err)
-            ElMessage.error(err)
-        })
+            .catch(err => {
+                console.log(err)
+                ElMessage.error(err)
+            })
+    }
 })
-const form = ref<{
-    team: any,
-    file: any,
-    desc: string
-}>({
+const form = ref({
     team: '',
     file: '',
     desc: ''
 })
-const uploadFile = ref()
+const uploadFiles = ref()
 const handleUploadFile = (msg) => {
-    uploadFile.value = msg
+    uploadFiles.value = msg
 }
 const rules = ref()
 const formRef = ref()
-const isSignUp: Ref<any> | undefined = inject('isSignUp')
 const handleSignUp = () => {
-    let signUpList
-    axios.get(`http://localhost:3000/teams?id=${form.value.team.id}`)
+    let formData = new FormData()
+    formData.append("file", uploadFiles.value[0].raw)
+    formData.append('groupid', form.value.team.id)
+    teamSignUp(route.params.Cid.split('&')[0], formData)
         .then(res => {
-            signUpList = {
-                leaderId: store.userInformation.id,
-                teamId: form.value.team.id,
-                teacherId: res.data[0].teacher.id,
-                file: uploadFile.value[0],
-                desc: form.value.desc,
-                signUpStatus: "waiting"
-            }
+            emit('update:modelValue', false)
+            formRef.value.resetFields()
+            if (res.data.data === '报名成功，等待审核')
+                ElMessage.success(res.data.data)
+            else if (res.data.data === '无法重复报名')
+                ElMessage.warning(res.data.data)
         })
         .catch(err => {
-            ElMessage.error(err)
             console.log(err)
-        })
-    axios.get(`http://localhost:3000/competitions?id=${props!.id}`)
-        .then(res => {
-            let tempSignUpList = res.data[0].signUpList
-            tempSignUpList.push(signUpList)
-            axios.patch(`http://localhost:3000/competitions/${props!.id}`, {
-                signUpList: tempSignUpList
-            })
-                .then(res => {
-                    isSignUp!.value = true
-                    emit('update:modelValue', false)
-                    formRef.value.resetFields()
-                    emit('getData')
-                    ElMessage.success("报名信息提交成功")
-                })
-                .catch(err => {
-                    ElMessage.error(err)
-                    console.log(err)
-                })
-        })
-        .catch(err => {
             ElMessage.error(err)
-            console.log(err)
         })
+
 }
 const handleClose = () => {
     emit('update:modelValue', false)

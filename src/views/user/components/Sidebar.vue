@@ -7,16 +7,10 @@
                 </el-icon>
                 <span>团队管理 </span>
             </template>
-            <el-menu-item index="/user/created" v-if="!store.isTeacher">我创建的</el-menu-item>
-            <el-menu-item index="/user/joined" v-if="!store.isTeacher">我加入的</el-menu-item>
-            <el-menu-item index="/user/guided" v-if="store.isTeacher">我指导的</el-menu-item>
+            <el-menu-item index="/user/created" v-if="store.role === '1'">我创建的</el-menu-item>
+            <el-menu-item index="/user/joined" v-if="store.role === '1'">我加入的</el-menu-item>
+            <el-menu-item index="/user/guided" v-if="store.role === '2'">我指导的</el-menu-item>
         </el-sub-menu>
-        <el-menu-item index="/user/goldMedal">
-            <el-icon>
-                <GoldMedal />
-            </el-icon>
-            <span>比赛记录</span>
-        </el-menu-item>
         <el-menu-item index="/user/message">
             <el-icon>
                 <Message />
@@ -36,10 +30,10 @@
 import { Operation, Message, User, GoldMedal } from '@element-plus/icons-vue'
 import { useRoute } from "vue-router"
 import { computed } from 'vue'
+import useLoginStore from '@/store/loginStore.js'
 import { ElMenuItemGroup } from 'element-plus';
-import useUserStore from '../../../store/userStore'
 
-const store = useUserStore()
+const store = useLoginStore()
 const route = useRoute()
 const defaultActive = computed(() => {
     return '/' + route.path.split('/')[1] + '/' + route.path.split('/')[2]
@@ -50,7 +44,7 @@ const defaultActive = computed(() => {
 .el-menu-vertical-bar:not(.el-menu--collapse) {
     padding: 10px;
     width: 200px;
-    height: 400px;
+    height: 640px;
     min-height: 100%;
     border-radius: 5px;
 }

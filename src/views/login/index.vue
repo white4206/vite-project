@@ -18,7 +18,6 @@
 <script setup>
 import LoginForm from "./components/LoginForm.vue"
 import LoginImg from "./components/LoginImg.vue"
-localStorage.setItem("loginToken", "")
 </script>
 
 <style lang="scss" scoped>

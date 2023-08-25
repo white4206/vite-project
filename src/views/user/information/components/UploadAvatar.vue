@@ -5,6 +5,8 @@
         <template #tip>
             <div class="el-upload__tip">
                 仅支持JPG、GIF、PNG格式，文件小于2M。
+                <br />
+                （暂不支持上传，功能待完善）
             </div>
         </template>
         <img v-if="imageUrl" :src="imageUrl" class="avatar" />
@@ -12,47 +14,55 @@
             <Plus />
         </el-icon>
     </el-upload>
-    <el-dialog v-model="dialogVisible" align-center width="40%" style="text-align: center;">
+    <el-dialog v-model="dialogVisible" align-center width="40%" style="text-align: center;" :show-close="false">
         <img :src="dialogImageUrl" alt="Preview Image" style="width:500px;" />
     </el-dialog>
 </template>
 
-<script lang="ts" setup>
+<script setup>
 import { ref, onMounted } from 'vue'
 import { Plus } from '@element-plus/icons-vue'
-import type { UploadFile, UploadProps } from 'element-plus'
 import { ElMessage } from 'element-plus'
-import axios from 'axios';
-import useUserStore from '../../../../store/userStore'
+import { changeHeadImg, getHeadImg } from '@/api/information.js'
+import useLoginStore from '@/store/loginStore.js'
 
-const store = useUserStore()
+const store = useLoginStore()
+
 const imageUrl = ref('')
 const uploadRef = ref()
 const uploadFiles = ref()
 
 const loading = ref(true)
 onMounted(() => {
-    setTimeout(() => {
-        axios.get(`http://localhost:3000/${store.isTeacher ? "teaUsers" : "users"}?username=${store.isTeacher ? store.userInformation.jobNumber : store.userInformation.studentNumber}`)
-            .then(res => {
-                if (JSON.stringify(res.data[0].avatar) !== '{}')
-                    uploadFiles.value = [res.data[0].avatar]
+    getHeadImg()
+        .then(res => {
+            if (res.data.code === 200) {
+                if (res.data.data.length === 0)
+                    uploadFiles.value = [
+                        {
+                            status: "ready",
+                            url: 'https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png'
+                        }
+                    ]
+                else
+                    uploadFiles.value = [
+                        {
+                            status: "ready",
+                            url: 'http://140.143.139.167' + res.data.data,
+                        }
+                    ]
                 loading.value = false
-            })
-            .catch(err => {
-                ElMessage.error(err)
-                console.log(err)
-            })
-    }, 1000)
+            }
+        })
+        .catch(err => console.log(err))
 })
-const handleChange: UploadProps['onChange'] = (rawFile, rawFileList) => {
+const handleChange = (rawFile, rawFileList) => {
 
     if (rawFileList.length > 1) {
         rawFileList.splice(0, 1);
     }
-    uploadFiles.value = rawFileList
-    if (rawFile.raw?.type !== 'image/jpeg' && rawFile.raw?.type !== 'image/png' && rawFile.raw?.type !== 'image/gif') {
-        ElMessage.error('logo图片格式必须是JPG、PNG、GIF')
+    if (rawFile.raw?.type !== 'image/jpeg') {
+        ElMessage.error('logo图片格式必须是JPG')
         uploadRef.value.clearFiles()
         return
     } else if (rawFile.raw?.size / 1024 / 1024 > 2) {
@@ -61,36 +71,27 @@ const handleChange: UploadProps['onChange'] = (rawFile, rawFileList) => {
         return
     }
     else {
-        const fileReader = new FileReader()
-        fileReader.readAsDataURL(rawFile.raw!)
-        fileReader.onload = () => {
-            let tempFile = rawFile
-            if (typeof (fileReader.result) === "string") {
-                tempFile.url = fileReader.result
-                axios.patch(`http://localhost:3000/${store.isTeacher ? "teaUsers" : "users"}/${store.userInformation.id}`, {
-                    avatar: tempFile,
-                })
-                    .then(res => {
-                        ElMessage.success("头像上传成功")
-                    })
-                    .catch(err => {
-                        ElMessage.error(err)
-                        console.log(err)
-                    })
-            }
-            else
-                ElMessage.error("error")
-        }
+        let formData = new FormData()
+        formData.append("headimg", rawFile.raw)
+        changeHeadImg(formData)
+            .then(res => {
+                if (res.data.code === 200) {
+                    uploadFiles.value = [rawFile]
+                    ElMessage.success('更换头像成功')
+                    store.reloadAvatar()
+                }
+            })
+            .catch(err => console.log(err))
     }
 }
 const dialogImageUrl = ref('')
 const dialogVisible = ref(false)
-const handleRemove = (file: UploadFile) => {
+const handleRemove = () => {
     // uploadFiles.value.splice(0, 1)
 }
 
-const handlePictureCardPreview = (file: UploadFile) => {
-    dialogImageUrl.value = file.url!
+const handlePictureCardPreview = () => {
+    dialogImageUrl.value = file.url
     dialogVisible.value = true
 }
 </script>

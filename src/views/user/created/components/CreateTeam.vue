@@ -1,6 +1,6 @@
 <template>
     <el-dialog title="none" width="35%" :show-close="false" :close-on-click-modal="false" :destroy-on-close="true"
-        :align-center="true" :close-on-press-escape="false">
+        :align-center="true" :close-on-press-escape="false" style="border-radius: 15px;">
         <template #header="{ close, titleId, titleClass }">
             <div class="my-header">
                 <h4 :id="titleId" :class="titleClass">创建团队</h4>
@@ -20,7 +20,7 @@
                             </el-form-item>
                             <el-form-item label="团队描述" prop="desc">
                                 <el-input v-model="form.desc" :rows="6" maxlength="100" show-word-limit type="textarea"
-                                    resize="none" />
+                                    resize="none" disabled placeholder="暂不支持添加，功能待完善" />
                             </el-form-item>
                         </el-form>
                     </div>
@@ -29,92 +29,68 @@
         </div>
         <template #footer>
             <div class="dialog-footer">
-                <el-button type="primary" @click="submitCreate(formRef)">创建</el-button>
-                <el-button @click="cancelCreate(formRef)">取消</el-button>
+                <el-button type="primary" @click="submitCreate">创建</el-button>
+                <el-button @click="cancelCreate">取消</el-button>
             </div>
         </template>
     </el-dialog>
 </template>
 
-<script lang="ts" setup>
+<script setup>
 import UploadLogo from '../../components/UploadLogo.vue'
 import { ref, reactive } from 'vue'
 import { ElMessage } from 'element-plus'
-import type { FormInstance } from 'element-plus'
-import axios from 'axios'
-import useUserStore from '../../../../store/userStore'
+import { createTeam } from '@/api/team.js'
 
-const store = useUserStore()
 //表单校验
-const logoValidator = (rule: any, value: any, callback: any) => {
-    if (value === false)
-        callback(new Error("请上传团队logo"));
-    else
-        callback()
+const logoValidator = (rule, value, callback) => {
+    // if (value === '')
+    //     callback(new Error("请上传团队logo"));
+    // else
+    callback()
 }
 const rules = reactive({
     name: [{ required: true, message: '请输入团队名称', trigger: 'blur' }, { min: 1, max: 20, message: '长度不可以超过20位', trigger: 'blur' }],
-    logo: [{ required: true, validator: logoValidator, trigger: 'blur' }],
-    desc: [{ required: true, message: '请输入团队描述', trigger: 'blur' }, { min: 10, max: 200, message: '内容至少为10位', trigger: 'blur' }]
+    logo: [{ validator: logoValidator, trigger: 'blur' }],
+    desc: [{ required: false, message: '请输入团队描述', trigger: 'blur' }, { min: 10, max: 200, message: '内容至少为10位', trigger: 'blur' }]
 })
 //表单
-const emit = defineEmits(['isShow', 'getNewData'])
-const formRef = ref<FormInstance>()
-const form = reactive<{
-    name: string,
-    logo: any,
-    desc: string
-}>({
+const emit = defineEmits(['isShow', 'getData'])
+const formRef = ref()
+const form = reactive({
     name: '',
     logo: '',
     desc: '',
 })
-const submitCreate = (formEl: FormInstance | undefined) => {
-    // if (JSON.stringify(form) !== '{"name":"","logo":"","desc":""}') {
-    formEl?.validate().then(res => {
-        axios.get(`http://localhost:3000/users?studentNumber=${store.userInformation.studentNumber}`)
+const submitCreate = () => {
+    formRef.value?.validate().then(res => {
+        createTeam({
+            groupname: form.name
+        })
             .then(res => {
-                emit("isShow")
-                axios.post("http://localhost:3000/teams", {
-                    name: form.name,
-                    desc: form.desc,
-                    // logoURL: base64.value
-                    logo: form.logo,
-                    leader: {
-                        name: res.data[0].name,
-                        studentNumber: res.data[0].studentNumber,
-                        major: res.data[0].major,
-                        department: res.data[0].department,
-                        grade: res.data[0].grade,
-                        id: res.data[0].id
-                    },
-                    member: [],
-                    teacher: {}
-                })
-                    .then(res => {
-                        emit('getNewData', 'AddNewTeam')
-                        formEl?.resetFields()
-                    })
-                    .catch(err => {
-                        console.error(err)
-                        ElMessage.error(err)
-                    })
-            }).catch(err => {
-                console.error(err)
-                ElMessage.error(err)
+                if (res.data.code === 200) {
+                    ElMessage.success('创建成功')
+                    emit('isShow')
+                    formRef.value?.resetFields()
+                    emit('getData')
+                }
+                else if (res.data.code === 0)
+                    ElMessage.warning(res.data.data)
+            })
+            .catch(err => {
+                console.log(err)
             })
     }).catch(err => {
         ElMessage.error("请正确填写团队信息")
     })
 }
-function cancelCreate(formEl: FormInstance | undefined) {
+function cancelCreate() {
     emit("isShow")
-    formEl?.resetFields()
+    formRef.value?.resetFields()
     ElMessage.info("取消创建")
 }
-const logoFile = ref<object[]>([])
+const logoFile = ref([])
 </script>
-
 
 <style lang="scss">
 .avatar-uploader .el-upload {

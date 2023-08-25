@@ -17,10 +17,6 @@
 <script setup>
 import Bottom from "./components/Bottom/index.vue"
 import Navbar from "./components/Navbar/index.vue"
-// import { provide, ref } from 'vue'
-
-// const isLogged = ref(false)
-// provide('isLogged', isLogged)
 </script>
 
 <style lang="scss" scoped>

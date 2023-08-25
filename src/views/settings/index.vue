@@ -23,11 +23,11 @@
                 </el-form>
                 <el-form v-if="activeStep === 1" size="large" :model="passwordFrom" style="width: 500px" :rules="rules"
                     ref="formRef">
-                    <el-form-item prop="oldPassword">
+                    <!-- <el-form-item prop="oldPassword">
                         <el-input v-model="passwordFrom.oldPassword" type="password" show-password>
                             <template #prepend>原密码</template>
                         </el-input>
-                    </el-form-item>
+                    </el-form-item> -->
                     <el-form-item prop="newPassword">
                         <el-input v-model="passwordFrom.newPassword" type="password" show-password>
                             <template #prepend>新密码</template>
@@ -51,13 +51,11 @@
     </el-row>
 </template>
   
-<script lang="ts" setup>
-import { reactive, ref } from 'vue'
-import useUserStore from '../../store/userStore.js'
-import axios from 'axios'
+<script setup>
+import { ref } from 'vue'
+import { changePw } from '@/api/setting.js'
 import { ElMessage, ElLoading } from 'element-plus'
 
-const store = useUserStore()
 const activeStep = ref(1)
 const formRef = ref()
 const identityFrom = ref({
@@ -69,23 +67,23 @@ const passwordFrom = ref({
     newPassword: '',
     confirmPassword: '',
 })
-const oldPwValidator = (rule: any, value: any, callback: any) => {
-    if (value !== store.userInformation.password)
-        callback(new Error("请检查原密码是否正确"));
-    else callback();
-}
-const newPwValidator = (rule: any, value: any, callback: any) => {
+// const oldPwValidator = (rule, value, callback) => {
+//     if (value !== store.userInformation.password)
+//         callback(new Error("请检查原密码是否正确"));
+//     else callback();
+// }
+const newPwValidator = (rule, value, callback) => {
     if (!/^(?![a-zA-Z]+$)(?!\d+$)(?![^\da-zA-Z\s]+$).{8,16}$/.test(value))
-        callback(new Error("由字母、数字、特殊字符，任意2种组成，长度9-16个字符"));
+        callback(new Error("由字母、数字、特殊字符，任意2种组成，长度8-16个字符"));
     else callback();
 }
-const confirmPwValidator = (rule: any, value: any, callback: any) => {
+const confirmPwValidator = (rule, value, callback) => {
     if (value === '' || value !== passwordFrom.value.newPassword)
         callback(new Error("两次密码输入不一致"));
     else callback();
 }
 const rules = ref({
-    oldPassword: [{ required: false, validator: oldPwValidator, trigger: 'submit' }],
+    // oldPassword: [{ required: false, validator: oldPwValidator, trigger: 'submit' }],
     newPassword: [{ required: false, validator: newPwValidator, trigger: 'blur' }],
     confirmPassword: [{ required: false, validator: confirmPwValidator, trigger: 'blur' }]
 })
@@ -94,25 +92,25 @@ const handleChangePassword = () => {
     formRef.value.validate().then(res => {
         loading.value = true
         setTimeout(() => {
-            axios.patch(`http://localhost:3000/${store.isTeacher ? "teaUsers" : "users"}/${store.userInformation.id}`, {
+            changePw({
                 password: passwordFrom.value.confirmPassword
             })
                 .then(res => {
-                    loading.value = false
-                    activeStep.value = 2
-                    ElMessage.success("修改成功")
-                    setTimeout(() => {
+                    if (res.data.code === 200) {
+                        loading.value = false
+                        activeStep.value = 2
+                        ElMessage.success(res.data.data)
                         activeStep.value = 3
                         // let fullscreenLoading = ElLoading.service({ fullscreen: true })
                         setTimeout(() => {
                             // fullscreenLoading.close()
                             location.reload()
-                        }, 1000)
-                    }, 1000)
+                        }, 2000)
+                    }
                 })
                 .catch(err => {
-                    ElMessage.error(err)
                     console.log(err)
+                    ElMessage.error(err)
                 })
         }, 1000)
     })

@@ -5,7 +5,7 @@
         <!-- isLogged?route.fullPath:'./login' -->
         <el-form :label-position="labelPosition" label-width="100px" :model="form">
             <el-form-item :label="whichUser ? '学号' : '职工号'">
-                <el-input v-model="form.name" placeholder="用户名">
+                <el-input v-model="form.username" placeholder="用户名">
                     <template #prefix>
                         <el-icon class="el-input__icon">
                             <User />
@@ -31,54 +31,50 @@
     </div>
 </template>
 <script setup>
-import { reactive, ref, inject } from 'vue'
-import axios from 'axios';
+import { reactive, ref, onMounted } from 'vue'
 import { useRouter } from "vue-router"
 import { Lock, User, Switch } from '@element-plus/icons-vue'
-import useLoginStore from '../../../store/loginStore';
-import useUserStore from '../../../store/userStore';
+import useLoginStore from '@/store/loginStore.js';
 import { ElMessage } from 'element-plus'
+import { login } from "@/api/login.js"
 
+const store = useLoginStore()
 const labelPosition = ref('top')
 const form = reactive({
-    name: '',
+    username: '',
     password: '',
+    role: '1'
 })
 const router = useRouter()
-// const isLogged = inject("isLogged")
-const loginStore = useLoginStore()
-const userStore = useUserStore()
+onMounted(() => {
+
+})
 const onSubmit = () => {
-    axios.get(`http://localhost:3000/${whichUser.value ? "users" : "teaUsers"}?username=${form.name}&password=${form.password}`)
-        .then((res) => {
-            if (res.data.length === 1) {
-                // isLogged.value = true
-                loginStore.$patch({
-                    isLogged: true
-                })
-
-
-                userStore.isTeacher = res.data[0].isTeacher
-                userStore.userInformation = res.data[0]
-                console.log(userStore.userInformation)
+    login(form)
+        .then(res => {
+            if (res.data.code === 200) {
+                store.role = form.role
+                store.SET_TOKEN(res.data.data.token)
+                store.isLogin = true
                 router.push("./home")
-                localStorage.setItem("loginToken", "successful login")
-                ElMessage.success("登陆成功")
+                ElMessage.success(res.data.msg)
             }
-            else if (res.data.length > 1)
-                ElMessage.error("error")
-
             else
-                ElMessage.error("账号或密码输入错误")
+                ElMessage.warning('请检查学生登录或教师登录')
         })
-        .catch((err) => {
-            console.error(err)
-            ElMessage.error(err)
-        });
+        .catch(err => {
+            console.log(err)
+            if (err.response.status)
+                ElMessage.error("账号或者密码错误")
+        })
 }
 const whichUser = ref(true)
 const handleSwitch = () => {
     whichUser.value = !whichUser.value
+    if (whichUser.value)
+        form.role = "1"
+    else
+        form.role = "2"
 }
 </script>
 

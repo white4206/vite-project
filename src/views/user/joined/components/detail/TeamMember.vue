@@ -1,6 +1,7 @@
 <template>
     <h3>团队成员:</h3>
-    <div class="team-member">
+    <div class="team-member"
+        v-if="JSON.stringify(memberData?.leader) !== '{}' && JSON.stringify(memberData?.member) !== '[]'">
         <el-card shadow="hover" :body-style="{
             'padding': '15px 10px'
         }">
@@ -10,15 +11,16 @@
                 </div>
                 <div>
                     <div style="padding-bottom: 5px;">
-                        <span style="padding-right:10px">{{ teamData!.leader.name }}</span>
+                        <span style="padding-right:10px">{{ memberData?.leader.membername }}</span>
                         <el-tag class="leader-tag" type="danger">队长</el-tag>
+                        <span class="small-text">{{ memberData?.leader.membercollege }}</span>
                     </div>
-                    <div class="small-text">{{ teamData!.leader.major }}</div>
+                    <div class="small-text">{{ memberData?.leader.membermajor }}</div>
                 </div>
             </span>
         </el-card>
         <el-row class="content" :gutter="10" style="margin-top: 10px;">
-            <el-col :span="8" v-for="(item, index) in teamData!.member" style="margin-bottom: 10px">
+            <el-col :span="8" v-for="(item, index) in  memberData?.member" style="margin-bottom: 10px">
                 <el-card shadow="hover" :body-style="{
                     'padding': '10px',
                 }
@@ -29,10 +31,10 @@
                         </div>
                         <div>
                             <div style="padding-bottom: 5px;">
-                                <span style="padding-right: 10px;">{{ item.name }}</span>
+                                <span style="padding-right: 10px;">{{ item.membername }}</span>
                                 <el-tag class="member-tag" type="success">成员</el-tag>
                             </div>
-                            <div class="small-text">{{ item.major }}</div>
+                            <div class="small-text">{{ item.membermajor }}</div>
                         </div>
                     </span>
                 </el-card>
@@ -42,10 +44,9 @@
 </template>
 
 <script lang="ts" setup>
-import { ElMessage } from 'element-plus'
 
 const props = defineProps({
-    teamData: {
+    memberData: {
         type: Object
     }
 })

@@ -1,58 +1,48 @@
 <template>
     <el-row justify="center">
-        <el-col :span="store.isTeacher ? 24 : 18">
+        <el-col :span="store.role === '2' ? 24 : 18">
             <div class="grid-content">
                 <PageHeader :data="competitionData"></PageHeader>
             </div>
         </el-col>
     </el-row>
     <el-row justify="center">
-        <el-col :span="store.isTeacher ? 24 : 18">
+        <el-col :span="store.role === '2' ? 24 : 18">
             <div class="grid-content">
                 <ContentSkeleton :loading="loading">
-                    <DetailContent :data="competitionData" v-model:isSignUp="isSignUp"></DetailContent>
+                    <DetailContent :data="competitionData"></DetailContent>
                 </ContentSkeleton>
             </div>
         </el-col>
     </el-row>
 </template>
 
-<script lang="ts" setup>
+<script setup>
 import ContentSkeleton from './components/ContentSkeleton.vue';
-import { onMounted, ref, provide } from 'vue'
-import { ElMessage } from 'element-plus'
+import { onMounted, ref} from 'vue'
 import { useRoute } from 'vue-router'
 import PageHeader from './components/PageHeader.vue';
 import DetailContent from './components/DetailContent.vue';
-import useUserStore from '../../../store/userStore'
-import axios from 'axios'
+import useLoginStore from '@/store/loginStore';
+import { competitionsDetail } from '@/api/competitions.js'
 
-const store = useUserStore()
+const store = useLoginStore()
 const route = useRoute()
-const competitionData = ref()
-const isSignUp = ref(false)
+const competitionData = ref([])
 const loading = ref(true)
 const getData = () => {
-    setTimeout(() => {
-        axios.get(`http://localhost:3000/competitions?id=${route.params.Cid}`)
-            .then(res => {
-                competitionData.value = res.data[0]
-                competitionData.value.signUpList.map((item) => {
-                    if (item.leaderId === store.userInformation.id)
-                        isSignUp.value = true
-                })
+    competitionsDetail(route.params.Cid.split('&')[0])
+        .then(res => {
+            if (res.data.code === 200) {
+                competitionData.value = res.data.data
                 loading.value = false
-            })
-            .catch(err => {
-                ElMessage.error(err)
-                console.log(err)
-            })
-    }, 1000)
+            }
+        })
+        .catch(err => console.log(err))
 }
 onMounted(() => {
     getData()
 })
-provide('isSignUp', isSignUp)
 </script>
 
 <style lang="scss" scoped>

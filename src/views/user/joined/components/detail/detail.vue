@@ -1,16 +1,27 @@
 <template>
     <el-dialog title="none" :show-close="true" :close-on-click-modal="false" :destroy-on-close="true" :align-center="true"
-        :close-on-press-escape="false">
+        :close-on-press-escape="false" style="border-radius: 15px;">
         <template #header="{ close, titleId, titleClass }">
             <div>
-                <h4 :id="titleId" :class="titleClass">团队详情</h4>
+                <h1 :id="titleId" :class="titleClass">团队详情</h1>
             </div>
         </template>
         <div class="dialog-content">
-            <el-row justify="center" class="content">
+            <el-row justify="center" class="content" :gutter="20">
                 <el-col :span="24">
-                    <TeamMember :teamData="teamData"></TeamMember>
-                    <TeamTeacher :teamData="teamData"></TeamTeacher>
+                    <TeamMember :memberData="memberData"></TeamMember>
+                    <TeamTeacher :memberData="memberData"></TeamTeacher>
+                </el-col>
+            </el-row>
+            <el-row>
+                <el-col :span="24" v-if="JSON.stringify(signUpDetailList) !== '[]'">
+                    <h3>报名状态:</h3>
+                    <div v-for="(item, index) in  signUpDetailList">
+                        <div style="margin-top: 20px;padding-left:75px;">{{ matchDetailList[index].match.matchname }}
+                            <el-tag effect="plain" :type="signUpStateType(item.ispass)">{{ signUpState(item.ispass)
+                            }}</el-tag>
+                        </div>
+                    </div>
                 </el-col>
             </el-row>
         </div>
@@ -22,35 +33,59 @@
     </el-dialog>
 </template>
 
-<script lang="ts" setup>
-import { ref, reactive, onMounted } from 'vue'
-import { ElMessage } from 'element-plus'
-import axios from 'axios'
+<script setup>
+import { ref, onMounted } from 'vue'
 import TeamMember from './TeamMember.vue'
 import TeamTeacher from './TeamTeacher.vue';
+import { joinedTeamDetail } from '@/api/team.js'
+import { competitionsDetail } from '@/api/competitions.js'
 
 const props = defineProps({
     id: {
         type: Number
     }
 })
-
-const teamData = reactive({
-    leader: <{ name: string, major: string }>{},
-    member: <{ name: string, major: string, id: number, studentNumber: string }[]>[],
-    teacher: <{ name: string, department: string, position: string }>{}
+const memberData = ref({
+    leader: {},
+    member: [],
+    teacher: []
 })
+const signUpDetailList = ref([])
+const matchDetailList = ref([])
+const signUpState = (ispass) => {
+    if (ispass === -1)
+        return '审核失败'
+    else if (ispass === 0)
+        return '等待老师审核'
+    else if (ispass === 1)
+        return '等待竞赛管理员审核'
+    else if (ispass === 2)
+        return '报名成功'
+}
+const signUpStateType = (ispass) => {
+    if (ispass === -1)
+        return 'error'
+    else if (ispass === 0)
+        return 'primary'
+    else if (ispass === 1)
+        return 'primary'
+    else if (ispass === 2)
+        return 'success'
+}
 const getData = () => {
-    axios.get(`http://localhost:3000/teams?id=${props.id}`)
+    joinedTeamDetail(props?.id)
         .then(res => {
-            teamData.leader = res.data[0].leader
-            teamData.member = res.data[0].member
-            teamData.teacher = res.data[0].teacher
+            if (res.data.code === 200) {
+                memberData.value.teacher = res.data.data.guider
+                res.data.data.stumember.map(item => {
+                    if (item.manager === 1)
+                        memberData.value.leader = item
+                    else
+                        memberData.value.member.push(item)
+                })
+            }
         })
-        .catch(err => {
-            console.error(err)
-            ElMessage.error(err)
-        })
+        .catch(err => console.log(err))
 }
 onMounted(() => {
     getData()

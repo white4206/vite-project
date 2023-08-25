@@ -6,7 +6,7 @@
   </el-page-header>
 </template>
 
-<script lang="ts" setup>
+<script setup>
 import { useRouter } from "vue-router"
 
 const props = defineProps({
@@ -24,6 +24,7 @@ const goBack = () => {
 .el-page-header {
   transition: 0.4s;
 }
+
 .el-page-header:hover {
   transform: translateX(-10px);
   transition: 0.4s;

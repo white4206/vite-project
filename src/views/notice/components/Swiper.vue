@@ -6,15 +6,10 @@
     </el-carousel>
 </template>
 
-<script lang="ts" setup>
+<script setup>
 import { ref, onMounted } from 'vue'
-const imageList = ref<{
-    name: string,
-    url: string,
-    id: number,
-    [propsName: string]: any
-}[]>([])
-const loading = ref<boolean>(true)
+const imageList = ref([])
+const loading = ref < boolean > (true)
 onMounted(() => {
     setTimeout(() => {
         imageList.value = [
@@ -40,7 +35,7 @@ onMounted(() => {
             }
         ]
         loading.value = false
-    }, 1000)
+    }, 200)
 })
 </script>
 

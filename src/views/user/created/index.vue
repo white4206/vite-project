@@ -2,12 +2,13 @@
     <!-- <CreateProject></CreateProject> -->
     <div class="teamCard-box" v-loading="loading">
         <template v-for="(item, index) in teamData" :key="item.id">
-            <TeamCard :data="item" :id="item.id" @getNewData="handleGet">
+            <TeamCard :data="item" :id="item.id" @getData="handleGet">
             </TeamCard>
         </template>
         <CreateCard @click="dialogTableVisible = true">
         </CreateCard>
-        <el-dialog v-model="dialogTableVisible" title="none" width="25%" :show-close="false" :close-on-click-modal="false">
+        <el-dialog v-model="dialogTableVisible" title="none" width="25%" :show-close="false" :close-on-click-modal="false"
+            style="border-radius: 15px;">
             <template #header="{ close, titleId, titleClass }">
                 <div class="my-header">
                     <h4 :id="titleId" :class="titleClass">温馨提示
@@ -33,61 +34,37 @@
                 </div>
             </template>
         </el-dialog>
-        <CreateTeam v-model="isCreate" @isShow="handleShow" @getNewData="handleGet"></CreateTeam>
+        <CreateTeam v-model="isCreate" @isShow="handleShow" @getData="handleGet"></CreateTeam>
     </div>
 </template>
 
-<script lang="ts" setup>
-import { ElMessage } from 'element-plus'
+<script setup>
 import { ref, onMounted, provide } from 'vue'
 import CreateCard from './components/CreateCard.vue';
 import TeamCard from './components/TeamCard.vue';
 import { Close } from '@element-plus/icons-vue'
 import CreateTeam from './components/CreateTeam.vue';
-import axios from 'axios';
-import useUserStore from '../../../store/userStore'
+import { createdTeams } from '@/api/team.js'
 
-const store = useUserStore()
 const loading = ref(true)
-interface iTeamData {
-    name: string,
-    desc: string,
-    id: number,
-    [propsName: string]: any
-}
-const teamData = ref<iTeamData[]>([])
-const getData = (msg = '') => {
-    loading.value = true
-    setTimeout(() => {
-        axios.get(`http://localhost:3000/teams`)
-            .then(res => {
-                teamData.value = []
-                res.data.map(item => {
-                    if (item.leader.studentNumber === store.userInformation.studentNumber)
-                        teamData.value?.push(item)
-                })
+const teamData = ref([])
+const getData = () => {
+    createdTeams()
+        .then(res => {
+            if (res.data.code === 200) {
+                teamData.value = res.data.data
                 loading.value = false
-                if (msg === 'delete')
-                    ElMessage.success("删除成功")
-                else if (msg === 'AddNewTeam') {
-                    ElMessage.success("创建成功")
-                }
-                else if (msg === 'EditTeam')
-                    ElMessage.success("编辑成功")
-
-            })
-            .catch(err => {
-                console.error(err)
-                ElMessage.error(err)
-            })
-    }, 1000)
+            }
+        })
+        .catch(err => {
+            console.log(err)
+        })
 }
 onMounted(() => {
     getData()
 })
-const handleGet = (msg) => {
-    // loading.value = true
-    getData(msg)
+const handleGet = () => {
+    getData()
 }
 const dialogTableVisible = ref(false)
 const isCreate = ref(false)

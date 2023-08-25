@@ -10,10 +10,11 @@
             <template #dropdown>
                 <el-dropdown-menu>
                     <el-dropdown-item :icon="Avatar" disabled>
-                        {{ teamData!.leader.name }}
+                        {{ memberData?.leader.membername }}
                     </el-dropdown-item>
-                    <el-dropdown-item v-for="(item, index) in teamData!.member" :icon="User" divided :command="item.id">
-                        {{ item.name }}
+                    <el-dropdown-item v-for="(item, index) in  memberData?.members" :icon="User" divided
+                        :command="item.userid">
+                        {{ item.membername }}
                     </el-dropdown-item>
                 </el-dropdown-menu>
             </template>
@@ -21,22 +22,22 @@
     </div>
 </template>
 
-<script lang="ts" setup>
+<script setup>
 import { Switch, Avatar, User } from '@element-plus/icons-vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { inject } from 'vue'
-import axios from 'axios'
+import { changeManager } from '@/api/team.js'
 
 const props = defineProps({
-    teamData: {
+    memberData: {
         type: Object
     },
     id: {
         type: Number
     }
 })
-const getTeamData: Function | undefined = inject("getData")
-const cancelEdit: Function | undefined = inject("cancelEdit")
+const getTeamMember = inject("getTeamMember")
+const cancelEdit = inject("cancelEdit")
 const handleCommand = (id) => {
     ElMessageBox.confirm(
         '确认变更团队队长吗？将失去管理团队的权限，变更后不可恢复！',
@@ -48,53 +49,16 @@ const handleCommand = (id) => {
         }
     )
         .then(() => {
-            axios.get(`http://localhost:3000/teams?id=${props.id}`)
+            changeManager(props.id, id)
                 .then(res => {
-                    let rawMember = res.data[0].member
-                    rawMember.map((item, index) => {
-                        if (item.id === id) {
-                            rawMember.splice(index, 1)
-                            rawMember.push(props.teamData!.leader)
-                        }
-                    })
-                    axios.patch(`http://localhost:3000/teams/${props.id}`, {
-                        member: rawMember
-                    })
-                        .then(res => { })
-                        .catch(err => {
-                            console.error(err)
-                            ElMessage.error(err)
-                        })
-                }).catch(err => {
-                    console.error(err)
-                    ElMessage.error(err)
-                })
-            axios.get(`http://localhost:3000/users?id=${id}`)
-                .then(res => {
-                    if (res.data.length !== 0) {
-                        axios.patch(`http://localhost:3000/teams/${props.id}`, {
-                            leader: {
-                                name: res.data[0].name,
-                                studentNumber: res.data[0].studentNumber,
-                                major: res.data[0].major,
-                                department: res.data[0].department,
-                                grade: res.data[0].grade,
-                                id: res.data[0].id
-                            },
-                        })
-                            .then(res => {
-                                getTeamData!()
-                                ElMessage.success("变更队长成功")
-                                cancelEdit!('changeCaptain')
-                            })
-                            .catch(err => {
-                                console.error(err)
-                                ElMessage.error(err)
-                            })
+                    if (res.data.code === 200) {
+                        getTeamMember()
+                        ElMessage.success('变更队长成功')
+                        cancelEdit('', 'changeCaptain')
                     }
                 })
                 .catch(err => {
-                    console.error(err)
+                    console.log(err)
                     ElMessage.error(err)
                 })
         })

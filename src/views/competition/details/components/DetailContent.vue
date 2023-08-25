@@ -4,7 +4,7 @@
             <el-row justify="space-between">
                 <el-col :span="18">
                     <div class="text-title-box">
-                        <h1>{{ data?.name }}</h1>
+                        <h1>{{ data?.match.matchname }}</h1>
                     </div>
                     <div class="date-box">
                         <el-icon>
@@ -12,62 +12,47 @@
                         </el-icon>
                         <span>{{ formattedStartDate }}-{{ formattedFinishDate }}</span>
                     </div>
-                    <div class="signUp-box" v-if="!store.isTeacher">
-                        <el-button v-if="!isSignUp" type="primary" @click="handleSignUp">申请报名</el-button>
-                        <el-dropdown v-if="isSignUp" type="primary" trigger="click" @command="handleCommand">
-                            <el-button type="primary" :disabled="signUpStatus === 'checking'">
-                                {{ currentState }}
-                                <el-icon class="el-icon--right"><arrow-down /></el-icon>
-                            </el-button>
-                            <template #dropdown>
-                                <el-dropdown-menu>
-                                    <el-dropdown-item command="cancelSignUp"
-                                        v-if="signUpStatus === 'waiting'">取消报名</el-dropdown-item>
-                                    <el-dropdown-item command="changeSignUpInfo"
-                                        v-if="signUpStatus === 'waiting'">修改报名信息</el-dropdown-item>
-                                    <el-dropdown-item command="viewDetail"
-                                        v-if="signUpStatus === 'teacherTurnDown'">查看详情</el-dropdown-item>
-                                    <el-dropdown-item command="viewSignUpInfo"
-                                        v-if="signUpStatus === 'success'">查看报名信息</el-dropdown-item>
-                                </el-dropdown-menu>
-                            </template>
-                        </el-dropdown>
-                        <div v-if="isSignUp" class="view-progress">
-                            <el-steps :active="progressNumber"
-                                :finish-status="signUpStatus === 'teacherTurnDown' ? 'error' : 'success'" align-center>
-                                <el-step title="申请报名" :icon="Edit" />
-                                <el-step title="老师审核" :icon="signUpStatus === 'teacherTurnDown' ? CircleClose : User" />
-                                <el-step title="学院审核" :icon="Reading" />
-                                <el-step title="报名成功" :icon="Check" />
-                            </el-steps>
-                        </div>
+                    <div class="signUp-box" v-if="store.role === '1' && route.params.Cid.split('&')[1] === '0'">
+                        <el-button type="primary" @click="handleSignUp" size="large">申请报名</el-button>
+                    </div>
+                    <div class="signUp-box" v-if="store.role === '1' && route.params.Cid.split('&')[1] === '-1'">
+                        <el-button type="primary" @click="handleSignUp" size="large" plain loading>活动未开始</el-button>
+                    </div>
+                    <div class="signUp-box" v-if="store.role === '1' && route.params.Cid.split('&')[1] === '1'">
+                        <el-button type="danger" @click="handleSignUp" size="large" plain disabled>活动已结束</el-button>
                     </div>
                 </el-col>
                 <el-col :span="5">
                     <div>
-                        <img src="/src/assets/reading.png" alt=""
+                        <img :src="data?.match.headimage ? data?.match.headumage : '/src/assets/school.jpg'" alt=""
                             style="width:200px;max-height: 300px;margin-bottom: 35px;">
                     </div>
                 </el-col>
             </el-row>
         </div>
 
-        <el-card class="text-content-box" shadow="always">
+        <el-card class="text-content-box" shadow="never">
             <div>
-                <div class="content-title">
-                    <span class="title-icon">
-                        <el-icon color="#337ecc">
-                            <CollectionTag />
-                        </el-icon>
-                    </span>
-                    <span>
-                        <h4>活动内容</h4>
-                    </span>
+                <div>
+                    <div class="content-title">
+                        <span class="title-icon">
+                            <el-icon color="#337ecc">
+                                <CollectionTag />
+                            </el-icon>
+                        </span>
+                        <span>
+                            <h4>活动内容</h4>
+                        </span>
+                    </div>
+                    <div class="content-text">
+                        {{ data?.match.content }}
+                        <div style="text-align: center;margin:20px 0;">
+                            <!-- 'http://140.143.139.167' +  -->
+                            <img :src="data?.match.headimage" :alt="data?.match.matchname" style="width:800px;">
+                        </div>
+                    </div>
                 </div>
-                <div class="content-text">
-                    {{ data?.content }}
-                </div>
-                <div class="content-title" v-if="true">
+                <div class="content-title" v-if="JSON.stringify(data?.matchfiles) !== '[]'">
                     <span class="title-icon">
                         <el-icon color="#337ecc">
                             <Folder />
@@ -78,144 +63,55 @@
                     </span>
                 </div>
                 <div class="content-attachments">
-                    <div><el-link :icon="Link" :underline="true">{{ "附件1.doc" }}</el-link></div>
-                    <div><el-link :icon="Link" :underline="true">{{ "附件adagfsarfq2er1212.doc" }}</el-link></div>
-                    <div><el-link :icon="Link" :underline="true">{{ "附件1adawedq2er234r4235.doc" }}</el-link></div>
+                    <div v-for="item in data?.matchfiles">
+                        <el-link :icon="Link" :underline="true" :href="'http://140.143.139.167' + item.matchfile"
+                            target="_blank">{{ item.matchfilename }}</el-link>
+                    </div>
                 </div>
             </div>
         </el-card>
-        <SignUpDialog v-model="signUp" :id="data?.id" @getData="handleGetData"></SignUpDialog>
-        <ChangeInfoDialog v-model="changeInformation" :id="data?.id" @getData="handleGetData"></ChangeInfoDialog>
-        <ViewDetailDialog v-model="viewDetail" v-model:isChangeInfo="changeInformation" :id="data?.id"
-            @getData="handleGetData"></ViewDetailDialog>
-        <ViewInfoDialog v-model="viewInformation" :id="data?.id" @getData="handleGetData"></ViewInfoDialog>
+        <el-card class="text-content-box" shadow="never" v-if="data?.match.maxlevel !== 0">
+            <div v-if="data?.match.maxlevel !== 0">
+                <div class="content-title">
+                    <span class="title-icon">
+                        <el-icon color="#337ecc">
+                            <Trophy />
+                        </el-icon>
+                    </span>
+                    <span>
+                        <h4>获奖名单</h4>
+                    </span>
+                </div>
+                <div class="content-text">
+                    {{ data?.match.content }}
+                </div>
+            </div>
+        </el-card>
+        <SignUpDialog v-model="signUp" :id="data?.id"></SignUpDialog>
     </div>
 </template>
 
-<script lang="ts" setup>
-import { Clock, CollectionTag, Link, Folder, ArrowDown, Edit, CircleClose, User, Reading, Check } from '@element-plus/icons-vue'
+<script setup>
+import { Clock, CollectionTag, Link, Folder, Trophy } from '@element-plus/icons-vue'
 import SignUpDialog from './SignUpDialog.vue'
-import ChangeInfoDialog from './ChangeInfoDialog.vue'
-import ViewDetailDialog from './ViewDetailDialog.vue'
-import ViewInfoDialog from './ViewInfoDialog.vue'
-import { computed, onMounted, ref } from 'vue'
-import { ElMessage, ElMessageBox } from 'element-plus';
-import axios from 'axios'
-import useUserStore from '../../../../store/userStore'
+import { computed, ref } from 'vue'
+import useLoginStore from '@/store/loginStore';
+import { useRoute } from 'vue-router'
 
-const store = useUserStore()
+const route = useRoute()
+const store = useLoginStore()
 const signUp = ref(false)
-const changeInformation = ref(false)
-const viewDetail = ref(false)
-const viewInformation = ref(false)
 const props = defineProps({
     data: {
         type: Object
-    },
-    isSignUp: {
-        type: Boolean
     }
-})
-const emit = defineEmits(['update:isSignUp'])
-const signUpStatus = ref()
-const getData = () => {
-    axios.get(`http://localhost:3000/competitions?id=${props.data!.id}`)
-        .then(res => {
-            res.data[0].signUpList.map(item => {
-                if (item.leaderId === store.userInformation.id) {
-                    signUpStatus.value = item.signUpStatus
-                }
-            })
-        })
-        .catch(err => {
-            ElMessage.error(err)
-            console.log(err)
-        })
-}
-onMounted(() => {
-    getData()
-})
-const handleGetData = () => {
-    getData()
-}
-const currentState = computed(() => {
-    if (props.isSignUp && signUpStatus.value === 'waiting')
-        return '待审核'
-    else if (props.isSignUp && signUpStatus.value === 'teacherTurnDown')
-        return '被驳回'
-    else if (props.isSignUp && signUpStatus.value === 'checking')
-        return '审核中'
-    else if (props.isSignUp && signUpStatus.value === 'success')
-        return '报名成功'
-})
-const progressNumber = computed(() => {
-    if (signUpStatus.value === 'success')
-        return 4
-    else if (signUpStatus.value === 'checking')
-        return 2
-    else if (signUpStatus.value === 'teacherTurnDown')
-        return 2
-    else if (signUpStatus.value === 'waiting')
-        return 1
-    else
-        return 0
-
 })
 const formattedStartDate = computed(() => {
-    return props.data?.startDate.split('-').join('.')
+    return props.data?.match.starttime.split('T')[0].split('-').join('.')
 })
 const formattedFinishDate = computed(() => {
-    return props.data?.finishDate.split('-').join('.')
+    return props.data?.match.deadline.split('T')[0].split('-').join('.')
 })
-const handleCommand = (command) => {
-    if (command === "cancelSignUp")
-        ElMessageBox.confirm(
-            '确认取消报名吗？ 取消后需要重新提交申请！',
-            '警告',
-            {
-                confirmButtonText: '确认',
-                cancelButtonText: '取消',
-                type: 'warning',
-            }
-        )
-            .then(() => {
-                axios.get(`http://localhost:3000/competitions?id=${props.data!.id}`)
-                    .then(res => {
-                        let tempSignUpList = res.data[0].signUpList
-                        tempSignUpList.map((item, index) => {
-                            if (item.leaderId === store.userInformation.id)
-                                tempSignUpList.splice(index, 1)
-                        })
-                        axios.patch(`http://localhost:3000/competitions/${props.data!.id}`, {
-                            signUpList: tempSignUpList
-                        })
-                            .then(res => {
-                                emit('update:isSignUp', false)
-                                ElMessage.success("取消报名成功")
-                            })
-                            .catch(err => {
-                                console.error(err)
-                                ElMessage.error(err)
-                            })
-                    })
-                    .catch(err => {
-                        console.error(err)
-                        ElMessage.error(err)
-                    })
-            })
-            .catch(() => {
-                ElMessage.info("取消操作")
-            })
-    else if (command === "changeSignUpInfo") {
-        changeInformation.value = true
-    }
-    else if (command === "viewDetail") {
-        viewDetail.value = true
-    }
-    else if (command === "viewSignUpInfo") {
-        viewInformation.value = true
-    }
-}
 const handleSignUp = () => {
     signUp.value = true
 }
@@ -236,6 +132,7 @@ const handleSignUp = () => {
 .text-content-box {
     border-radius: 15px;
     padding: 20px;
+    margin-bottom: 50px;
 }
 
 .date-box {
@@ -244,7 +141,7 @@ const handleSignUp = () => {
     align-items: center;
     font-size: 16px;
     color: #606266;
-    margin-bottom: 50px;
+    margin-bottom: 40px;
 
     span {
         padding-left: 5px;

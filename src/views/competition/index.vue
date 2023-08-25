@@ -1,5 +1,5 @@
 <template>
-    <div v-if="store.isTeacher">
+    <div v-if="store.role === '2'">
         <el-row justify="space-around">
             <el-col :span="24">
                 <div class="common-layout">
@@ -15,16 +15,16 @@
             </el-col>
         </el-row>
     </div>
-    <div v-if="!store.isTeacher">
+    <div v-if="store.role === '1'">
         <router-view></router-view>
     </div>
 </template>
 
-<script lang="ts" setup>
-import useUserStore from '../../store/userStore';
+<script setup>
 import Sidebar from './components/Sidebar.vue';
+import useLoginStore from '@/store/loginStore';
 
-const store = useUserStore()
+const store = useLoginStore()
 </script>
 
 <style lang="scss" scoped>

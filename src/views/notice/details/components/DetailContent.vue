@@ -4,7 +4,7 @@
             <el-row justify="center">
                 <el-col :span="18">
                     <div class="text-title-box">
-                        <h1>{{ data?.title }}</h1>
+                        <h1>{{ data?.info.infotitle }}</h1>
                     </div>
                 </el-col>
             </el-row>
@@ -22,10 +22,10 @@
                     </span>
                 </div>
                 <div class="content-text">
-                    {{ data?.content }}
-                    <div style="text-align: center;">
-                        <img src="https://jsj.suse.edu.cn/_rest/linker_allfile.ashx?parr=news%2c638259206192644444%2c.jpeg%2c0%2c0%2c202307252223%2c7492904efa654625f369178e186f23f2&said=636059516973492676"
-                            alt="">
+                    {{ data?.info.infocontent }}
+                    <div style="text-align: center;margin: 20px 0;" v-for="item in data?.images">
+                        <img :src="'http://140.143.139.167' + item.imgurl" :alt="item.imgname" style="width:800px;">
+                        <div> {{ item.imgname }}</div>
                     </div>
                 </div>
                 <div class="content-title" v-if="true">
@@ -39,16 +39,16 @@
                     </span>
                 </div>
                 <div class="content-attachments">
-                    <div><el-link :icon="Link" :underline="true">{{ "附件1.doc" }}</el-link></div>
-                    <div><el-link :icon="Link" :underline="true">{{ "附件adagfsarfq2er1212.doc" }}</el-link></div>
-                    <div><el-link :icon="Link" :underline="true">{{ "附件1adawedq2er234r4235.doc" }}</el-link></div>
+                    <div v-for="item in data?.files">
+                        <el-link :icon="Link" :underline="true">{{ item.filename }}</el-link>
+                    </div>
                 </div>
             </div>
         </el-card>
     </div>
 </template>
 
-<script lang="ts" setup>
+<script setup>
 import { Clock, CollectionTag, Link, Folder, ArrowDown, Edit, User, Reading, Check } from '@element-plus/icons-vue'
 import { computed, ref } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus';

@@ -19,10 +19,7 @@
 import { EditPen, TrophyBase } from '@element-plus/icons-vue'
 import { useRoute } from "vue-router"
 import { computed } from 'vue'
-import { ElMenuItemGroup } from 'element-plus';
-import useUserStore from '../../../store/userStore'
 
-const store = useUserStore()
 const route = useRoute()
 const defaultActive = computed(() => {
     return '/' + route.path.split('/')[1] + '/' + route.path.split('/')[2]

@@ -27,23 +27,23 @@ onBeforeMount(() => {
                 id: 1
             },
             {
-                name: "汇东校区",
-                url: "https://www.suse.edu.cn/_rest/linker_allfile.ashx?parr=news%2c637979947381621681%2c.jpg%2c0%2c0%2c202307251615%2cc2248ebc34fa7df12e0bc0ef9bfe5469&said=636122975317834394",
+                name: "宜宾校区",
+                url: "https://www.suse.edu.cn/_rest/linker_allfile.ashx?parr=news%2c636735607532505026%2c.jpg%2c0%2c0%2c202307251615%2cc2248ebc34fa7df12e0bc0ef9bfe5469&said=636122975317834394",
                 id: 2
             },
             {
-                name: "宜宾校区",
-                url: "https://www.suse.edu.cn/_rest/linker_allfile.ashx?parr=news%2c636735607532505026%2c.jpg%2c0%2c0%2c202307251615%2cc2248ebc34fa7df12e0bc0ef9bfe5469&said=636122975317834394",
+                name: "汇东校区",
+                url: "https://www.suse.edu.cn/_rest/linker_allfile.ashx?parr=news%2c637979947381621681%2c.jpg%2c0%2c0%2c202307251615%2cc2248ebc34fa7df12e0bc0ef9bfe5469&said=636122975317834394",
                 id: 3
             },
             {
                 name: "黄岭校区",
-                url: "https://www.suse.edu.cn/_rest/linker_allfile.ashx?parr=news%2c637979944710583838%2c.jpg%2c0%2c0%2c202307251615%2cc2248ebc34fa7df12e0bc0ef9bfe5469&said=636122975317834394",
+                url: "https://jsj.suse.edu.cn/_rest/linker_allfile.ashx?parr=news%2c637484178485721070%2c.jpg%2c0%2c0%2c202308251817%2c73c02cde77853edf15b79d4ca2905819&said=636059516973492676",
                 id: 4
             }
         ]
         loading.value = false
-    }, 1000)
+    }, 100)
 })
 </script>
 

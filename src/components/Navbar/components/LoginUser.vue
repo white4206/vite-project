@@ -30,16 +30,25 @@
 </template>
 
 <script setup>
-// import { inject } from 'vue'
 import UserAvatar from './UserAvatar.vue';
-import { Close, User, Edit } from '@element-plus/icons-vue'
+import { User, Edit } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus';
-import useLoginStore from '../../../store/loginStore';
+import useLoginStore from '@/store/loginStore';
+import { logout } from '@/api/login.js'
+
 const store = useLoginStore()
-// const isLogged = inject("isLogged")
 const handleExit = () => {
-    // isLogged.value = false
-    store.isLogged = false
+    logout()
+        .then(res => {
+            if (res.data.code === 200) {
+                store.isLogin = false
+                store.REMOVE_TOKEN()
+            }
+        })
+        .catch(err => {
+            console.log(err)
+            ElMessage.error(err)
+        })
     ElMessage.error("退出登录")
 }
 </script>

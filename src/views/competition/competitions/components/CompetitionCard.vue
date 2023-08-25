@@ -1,71 +1,124 @@
 <template>
     <div class="competition-card">
-        <div class="competition-info">
-            <div class="competition-img">
-                <img src="/src/assets/notFound.jpg" alt="">
-            </div>
-            <div class="competition-title-box">
-                <div class="competition-title">
-                    <!-- <el-tooltip effect="dark" :content="data.name" placement="top-start"> -->
-                    <span class="title-box">{{ data?.name }}</span>
-                    <!-- </el-tooltip> -->
-                    <el-tag type="" effect="plain">
-                        {{ "报名中" }}
-                    </el-tag>
-                </div>
-                <div>
-                    <div class="date-box">
-                        <el-icon>
-                            <Clock />
-                        </el-icon>
-                        <span>{{ formattedStartDate }}-{{ formattedFinishDate }}</span>
+        <el-row align="middle">
+            <el-col :span="12">
+                <div class="competition-info">
+                    <div class="competition-img">
+                        <img :src="data?.headimage ? data?.headimage : '/src/assets/notFound.jpg'" alt="">
+
                     </div>
-                    <div class="date-box">
-                        <el-icon>
-                            <More />
-                        </el-icon>
-                        <span>{{ data?.desc }}</span>
+                    <div class="competition-title-box">
+                        <div class="competition-title">
+                            <span class="title-box">{{ data?.matchname }}</span>
+                            <el-tag :type="state?.type">
+                                {{ state?.text }}
+                            </el-tag>
+                        </div>
+                        <div>
+                            <div class="date-box">
+                                <el-icon>
+                                    <Clock />
+                                </el-icon>
+                                <span>{{ formattedStartDate }}-{{ formattedFinishDate }}</span>
+                            </div>
+                            <div class="date-box">
+                                <el-icon>
+                                    <User />
+                                </el-icon>
+                                <span>{{ data?.signnum + ' / ' + data?.maxcount }}</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </div>
-        <div class="competition-icon">
-            <el-icon color="#909399">
-                <ArrowRightBold />
-            </el-icon>
-        </div>
+            </el-col>
+            <el-col :span="11" style="padding:0 10px;">
+                <div v-if="data?.maxstep > 1 && data?.matchstate !== 1" class="step-box">
+                    <div class="content-text">
+                        <el-steps :space="200" :active="data?.presentstep" align-center>
+                            <template v-for="(item, index) in data?.maxstep">
+                                <el-step :title="'阶段' + item" :icon="item?.icon" @click.stop="handleStep(index + 1)"
+                                    class="step-item" />
+                            </template>
+                        </el-steps>
+                    </div>
+                </div>
+            </el-col>
+            <el-col :span="1">
+                <div class="competition-icon">
+                    <el-icon color="#909399">
+                        <ArrowRightBold />
+                    </el-icon>
+                </div>
+            </el-col>
+        </el-row>
     </div>
 </template>
 
-<script lang="ts" setup >
-import { ArrowRightBold, Clock, More } from '@element-plus/icons-vue'
-import { computed } from 'vue'
+<script setup>
+import { ArrowRightBold, Clock, User } from '@element-plus/icons-vue'
+import { computed, h } from 'vue'
+import { ElNotification, ElMessage } from 'element-plus'
+import { positionStep } from '@/api/competitions';
+import { useRouter } from 'vue-router'
 
+const router = useRouter()
 const props = defineProps({
     data: {
         type: Object
     }
 })
 const formattedStartDate = computed(() => {
-    return props.data?.startDate.split('-').join('.')
+    return props.data?.starttime.split('-').join('.')
 })
 const formattedFinishDate = computed(() => {
-    return props.data?.finishDate.split('-').join('.')
+    return props.data?.deadline.split('-').join('.')
 })
+const state = computed(() => {
+    if (props.data?.matchstate === -1)
+        return { type: 'warning', text: '未开始' }
+    else if (props.data?.matchstate === 0)
+        return { type: '', text: '正在进行' }
+    else if (props.data?.matchstate === 1)
+        return { type: 'danger', text: '已结束' }
+})
+const handleStep = (stepNum) => {
+    if (props.data?.presentstep < stepNum)
+        ElNotification({
+            title: '提示',
+            type: 'warning',
+            message: h('div', { style: 'color: teal' }, '流程尚未开始'),
+            zIndex: 9999
+        })
+    else
+        positionStep({
+            matchid: props.data?.id,
+            stepnum: stepNum
+        })
+            .then(res => {
+                router.push(`/competition/competitions/details/${res.data.data.id}&${res.data.data.matchstate}`)
+            })
+            .catch(err => {
+                console.log(err)
+                ElMessage.error(err)
+            })
+}
 </script>
 <style lang="scss" scoped>
 .competition-card {
     background-color: #FFFFFF;
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
 }
 
 .competition-info {
     display: flex;
     flex-direction: row;
+    transition: .4s;
 }
+
+.competition-info:hover {
+    transform: translate(-10px);
+    transition: .4s;
+}
+
 
 .competition-img {
     width: 200px;
@@ -80,7 +133,7 @@ const formattedFinishDate = computed(() => {
 }
 
 .competition-title-box {
-    width: 600px
+    width: 300px
 }
 
 .competition-title {
@@ -92,7 +145,6 @@ const formattedFinishDate = computed(() => {
     color: #303133;
 
     .title-box {
-        font-weight: bold;
         padding-right: 20px;
         overflow: hidden;
         white-space: nowrap;
@@ -105,7 +157,7 @@ const formattedFinishDate = computed(() => {
     display: flex;
     flex-direction: row;
     align-items: center;
-    font-size: 13px;
+    font-size: 14px;
     color: #909399;
     margin-bottom: 5px;
 
@@ -116,5 +168,22 @@ const formattedFinishDate = computed(() => {
 
 .competition-icon {
     padding-right: 75px;
+    transition: .4s;
+}
+
+.competition-icon:hover {
+    transform: translate(-10px);
+    transition: .4s;
+}
+
+.step-box {
+    background-color: #F2F6FC;
+    border-radius: 15px;
+    padding: 20px 10px;
+    cursor: default;
+}
+
+.step-item {
+    cursor: pointer;
 }
 </style>

@@ -9,8 +9,8 @@
         <div class="dialog-content">
             <el-row justify="center" class="content">
                 <el-col :span="24">
-                    <TeamMember :teamData="teamData"></TeamMember>
-                    <TeamTeacher :teamData="teamData"></TeamTeacher>
+                    <TeamMember :memberData="memberData"></TeamMember>
+                    <TeamTeacher :memberData="memberData"></TeamTeacher>
                 </el-col>
             </el-row>
         </div>
@@ -22,12 +22,11 @@
     </el-dialog>
 </template>
 
-<script lang="ts" setup>
-import { ref, reactive, onMounted } from 'vue'
-import { ElMessage } from 'element-plus'
-import axios from 'axios'
+<script setup>
+import { ref,onMounted } from 'vue'
 import TeamMember from './TeamMember.vue'
-import TeamTeacher from './TeamTeacher.vue';
+import TeamTeacher from './TeamTeacher.vue'
+import { joinedTeamDetail } from '@/api/team.js'
 
 const props = defineProps({
     id: {
@@ -35,22 +34,25 @@ const props = defineProps({
     }
 })
 
-const teamData = reactive({
-    leader: <{ name: string, major: string }>{},
-    member: <{ name: string, major: string, id: number, studentNumber: string }[]>[],
-    teacher: <{ name: string, department: string, position: string }>{}
+const memberData = ref({
+    leader: {},
+    member: [],
+    teacher: []
 })
 const getData = () => {
-    axios.get(`http://localhost:3000/teams?id=${props.id}`)
+    joinedTeamDetail(props?.id)
         .then(res => {
-            teamData.leader = res.data[0].leader
-            teamData.member = res.data[0].member
-            teamData.teacher = res.data[0].teacher
+            if (res.data.code === 200) {
+                memberData.value.teacher = res.data.data.guider
+                res.data.data.stumember.map(item => {
+                    if (item.manager === 1)
+                        memberData.value.leader = item
+                    else
+                        memberData.value.member.push(item)
+                })
+            }
         })
-        .catch(err => {
-            console.error(err)
-            ElMessage.error(err)
-        })
+        .catch(err => console.log(err))
 }
 onMounted(() => {
     getData()
