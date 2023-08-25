@@ -3,7 +3,7 @@
         <div class="title-time">{{ "2023-xx-xx" }}</div>
         <div class="content-text">
             您收到了一条来自
-            <el-popover :width="175">
+            <el-popover :width="225">
                 <template #reference>
                     <el-link>{{ messageData.creater?.nickname }}</el-link>
                 </template>
@@ -24,7 +24,7 @@
                 </div>
             </el-popover>
             的团队——
-            <el-popover :width="175">
+            <el-popover :width="225">
                 <template #reference>
                     <el-link>{{ messageData.groupname }}</el-link>
                 </template>
