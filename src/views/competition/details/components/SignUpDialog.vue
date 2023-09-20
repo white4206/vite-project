@@ -66,7 +66,7 @@ const props = defineProps({
 const teamData = ref()
 const emit = defineEmits(['update:modelValue'])
 onMounted(() => {
-    if (store.role === 1) {
+    if (store.role === '1') {
         createdTeams()
             .then(res => {
                 if (res.data.code === 200)
