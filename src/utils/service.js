@@ -3,7 +3,7 @@ import { getToken } from "@/utils/auth";
 
 //创建axios实例
 const service = axios.create({
-  baseURL: "/api",
+  baseURL: "http://140.143.139.167:8002",
   timeout: 2000,
 });
 // 添加请求拦截器
