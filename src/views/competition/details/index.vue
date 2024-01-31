@@ -1,13 +1,13 @@
 <template>
     <el-row justify="center">
-        <el-col :span="store.role === '2' ? 24 : 18">
+        <el-col :span="store.GET_ROLE() === '2' ? 24 : 18">
             <div class="grid-content">
                 <PageHeader :data="competitionData"></PageHeader>
             </div>
         </el-col>
     </el-row>
     <el-row justify="center">
-        <el-col :span="store.role === '2' ? 24 : 18">
+        <el-col :span="store.GET_ROLE() === '2' ? 24 : 18">
             <div class="grid-content">
                 <ContentSkeleton :loading="loading">
                     <DetailContent :data="competitionData"></DetailContent>
@@ -33,8 +33,8 @@ const loading = ref(true)
 const getData = () => {
     competitionsDetail(route.params.Cid.split('&')[0])
         .then(res => {
-            if (res.data.code === 200) {
-                competitionData.value = res.data.data
+            if (res.code === 200) {
+                competitionData.value = res.data
                 loading.value = false
             }
         })

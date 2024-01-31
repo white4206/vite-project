@@ -3,9 +3,9 @@
         <template #header>
             <div class="card-header">
                 <span class="card-header-title">
-                    <span><img :src="data?.logoUrl ? data?.logoUrl : 'src/assets/team.png'" :alt="data?.groupname"
+                    <span><img :src="data?.logoUrl ? data?.logoUrl : 'src/assets/team.png'" :alt="data?.groupName"
                             width="25"></span>
-                    {{ data?.groupname }}
+                    {{ data?.groupName }}
                 </span>
                 <span>
                     <el-button type="primary" plain @click="handleOpen">详情</el-button>

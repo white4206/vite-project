@@ -26,7 +26,7 @@
 .skeleton-box {
     background-color: #FFFFFF;
     border-radius: 15px;
-    padding: 20px;
+    padding: 10px;
 }
 
 .skeleton-title-box {
@@ -37,7 +37,7 @@
 
 .skeleton-title-item {
     border-radius: 15px;
-    height: 120px;
+    height: 125px;
 }
 
 .skeleton-content-box {

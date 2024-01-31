@@ -34,9 +34,9 @@
             <div class="content-box">
                 <el-timeline>
                     <el-timeline-item v-for="(item, index) in filterTableData" :key="item"
-                        :type="timeLineType(item.prizelevel)" :hollow="true" :timestamp="item.winprizetime">
-                        {{ item.matchname }}
-                        <el-tag v-if="item.prizename" :type="prizeType(item.prizelevel)">{{ item.prizename
+                        :type="timeLineType(item.prizeLevel)" :hollow="true" :timestamp="item.winPrizeTime">
+                        {{ item.matchName }}
+                        <el-tag v-if="item.prizeName" :type="prizeType(item.prizeLevel)">{{ item.prizeName
                         }}</el-tag>
                     </el-timeline-item>
                 </el-timeline>
@@ -45,7 +45,7 @@
         </div>
         <template #footer>
             <div class="dialog-footer">
-
+                
             </div>
         </template>
     </el-dialog>
@@ -65,17 +65,17 @@ const props = defineProps({
 const getData = () => {
     teamAwards(props.id)
         .then(res => {
-            if (res.data.code === 200) {
-                recordData.value = res.data.data
+            if (res.code === 200) {
+                recordData.value = res.data
                 recordData.value = recordData.value.map(item => {
-                    item.winprizetime = item.winprizetime.split('T')[0]
+                    item.winPrizeTime = item.winPrizeTime.split('T')[0]
                     return item
                 })
                 recordData.value.push({
-                    matchname: `${JSON.stringify(res.data.data) === '[]' ? '暂无获奖记录...' : '...'}`,
-                    prizelevel: '',
-                    prizename: '',
-                    winprizetime: ''
+                    matchName: `${JSON.stringify(res.data) === '[]' ? '暂无获奖记录...' : '...'}`,
+                    prizeLevel: '',
+                    prizeName: '',
+                    winPrizeTime: ''
                 })
             }
         })
@@ -127,20 +127,20 @@ const filterRecordData = computed(() => {
             if (selectedValue.value === "全部比赛")
                 return true
             else if (selectedValue.value === "一等奖")
-                return item.prizelevel === 1
+                return item.prizeLevel === 1
             else if (selectedValue.value === "二等奖")
-                return item.prizelevel === 2
+                return item.prizeLevel === 2
             else if (selectedValue.value === "三等奖")
-                return item.prizelevel === 3
+                return item.prizeLevel === 3
             else if (selectedValue.value === "其他奖项")
-                return item.prizelevel > 3
+                return item.prizeLevel > 3
         }
     )
 })
 const selectedDate = ref()
 const filterTableData = computed(() => {
     return filterRecordData.value?.filter(
-        item => !selectedDate.value || selectedDate.value === item.winprizetime
+        item => !selectedDate.value || selectedDate.value === item.winPrizeTime
     )
 })
 </script>

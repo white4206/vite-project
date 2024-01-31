@@ -12,10 +12,10 @@
                         </div>
                         <div>
                             <div style="padding-bottom: 5px;">
-                                <span style="padding-right:10px">{{ item.membername }}</span>
+                                <span style="padding-right:10px">{{ item.memberName }}</span>
                                 <el-tag class="teacher-tag" type="">老师</el-tag>
                             </div>
-                            <span class="small-text">{{ item.membercollege }}</span>
+                            <span class="small-text">{{ item.memberCollege }}</span>
                         </div>
                     </span>
                 </el-card>

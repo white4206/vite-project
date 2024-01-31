@@ -51,8 +51,8 @@ const teamData = ref([])
 const getData = () => {
     createdTeams()
         .then(res => {
-            if (res.data.code === 200) {
-                teamData.value = res.data.data
+            if (res.code === 200) {
+                teamData.value = res.data
                 loading.value = false
             }
         })

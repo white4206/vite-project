@@ -1,82 +1,68 @@
 <template>
-    <div class="bottom-box">
-        <div class="content regular-text">
-            <svg t="1689566178453" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"
-                p-id="2190" width="55" height="55">
-                <path d="M681.4 786H149.8s-53.2-1.1-53.2-86.2h637.9c0.1 85.1-53.1 86.2-53.1 86.2z" fill="#42A5F5"
-                    p-id="2191">
-                </path>
-                <path d="M132.1 97.3h567v602.5h-567V97.3z" fill="#90CAF9" p-id="2192"></path>
-                <path
-                    d="M601.2 230H230v52.1h371.2V230z m0 104.8H230v53.5h371.2v-53.5zM494.8 442.3H230v52.2h264.8v-52.2z m0.1 105.2H230v53.4h264.9v-53.4z"
-                    fill="#FFFFFF" p-id="2193"></path>
-                <path
-                    d="M927.1 606c0-5.1-3.9-9.2-8.8-9.2H867v-1c0.1-3.2 0.1-6.4 0.1-9.5 0-9.8-0.4-20.1-1.2-31.5-0.4-4.8-4.2-8.5-8.7-8.5H581.5c-4.6 0-8.4 3.8-8.7 8.5-0.8 9.9-1.2 21.5-1.2 33.2 0 0.9 0 3.4 0.1 6l0.1 2.8h-50.4c-4.8 0-8.8 4.1-8.8 9.3-3.2 67.5 24.4 141.6 93.4 155.1 0.5 0.1 1 0.2 1.6 0.2 0.9 0 1.9-0.2 2.7-0.5l0.6-0.2 0.4 0.7c10.8 19.9 23.3 36.6 37.2 49.5 17.5 16.3 36.4 26.1 56.5 29.3l5.5 1v67.1H642c-4.8 0-8.8 4.1-8.8 9.2 0 4.9 3.7 8.9 8.3 9.2h155.1c4.8 0 8.8-4.1 8.8-9.2s-3.9-9.2-8.8-9.2h-68.5v-59.7-7.5l5.6-1c20.1-3.2 39.1-13.1 56.5-29.3 14-13 26.6-29.8 37.4-49.9l0.4-0.8 0.8 0.3c1 0.5 2.1 0.8 3.3 0.8 0.6 0 1.1-0.1 1.7-0.2 68.9-13.4 96.5-87.5 93.3-155zM599.7 740.9c-34.3-9.7-70.6-52.8-69.5-124.7v-1h42.3l0.1 0.9c3.3 45.5 12.8 87 28.2 123.4l0.8 1.9-1.9-0.5z m309.6-124.7c1.2 72.7-35.7 115.7-70.4 124.9l-2 0.5 0.8-1.9c10.3-24.1 18-50.7 22.9-78.9l0.9-5.4c1.7-10.4 3-21.2 3.9-32l0.3-3.8 0.3-4.4h43.2l0.1 1z"
-                    fill="#FFCC80" p-id="2194"></path>
-                <path
-                    d="M719.8 616.5l19.4 39.3 43.3 6.3-31.3 30.6 7.4 43.1-38.8-20.4-38.8 20.4 7.4-43.1-31.4-30.6 43.4-6.3z"
-                    fill="#F44336" p-id="2195"></path>
-            </svg>
-            <span>学科竞赛服务平台</span>
+  <div class="bottom-box">
+    <el-row justify="center" :gutter="100" style="max-width: 1500px;margin: 0 auto;padding: 20px;">
+      <el-col :span="9">
+        <div class="logo">
+          <Logo/>
+          <span>学科竞赛服务平台</span>
         </div>
-        <div class="content secondary-text">
-            <span class="text">
-                四川轻化工大学
-            </span>
-            <span class="text">
-                计算机科学与工程学院
-            </span>
+        <div class="content">
+          <p>四川轻化工大学 - 计算机科学与工程学院</p>
+          <p>学生可登入获取相关竞赛信息并组织参赛队伍参加竞赛，统计并分析学生所参加的竞赛信息及获奖信息。</p>
         </div>
-        <div class="content regular-text">
-            <el-icon>
-                <Message />
-            </el-icon>
-            <span class="text">
-                问题反馈
-            </span>
-            <span class="text">
-                1834893128@qq.com
-            </span>
+        <div class="content">
+          <p>版权信息、备案信息待完善</p>
         </div>
-    </div>
+      </el-col>
+      <el-col :span="9">
+        <div class="logo">
+          <span>问题反馈</span>
+        </div>
+        <div class="content">
+          <p>反馈途径</p>
+          <p>反馈信息待完善</p>
+        </div>
+        <div class="logo">
+          <span>联系我们</span>
+        </div>
+        <div class="content">
+          <p>联系途径</p>
+          <p>联系信息待完善</p>
+        </div>
+      </el-col>
+    </el-row>
+  </div>
 </template>
 
-<script lang="ts" setup >
-import { Message } from '@element-plus/icons-vue'
+<script lang="ts" setup>
+import {Message} from '@element-plus/icons-vue'
+import Logo from "@/components/Bottom/components/Logo.vue";
 </script>
 
 <style lang="scss">
 .el-footer {
-    padding: 0px;
+  padding: 0px;
 }
 </style>
 
 <style lang="scss" scoped>
 .bottom-box {
-    padding: 0 12.5%;
-    height: 300px;
-    background-color: #FFFFFF;
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
+  background-color: #303133;
+  overflow: hidden;
 }
 
-.text {
-    margin: 0 10px;
-}
-
-.regular-text {
-    color: #606266;
-}
-
-.secondary-text {
-    color: #909399;
+.logo {
+  height: 32px;
+  color: #FFFFFF;
+  margin-top: 50px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 }
 
 .content {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
+  margin-top: 20px;
+  font-size: 12px;
+  color: #A8ABB2;
 }
 </style>

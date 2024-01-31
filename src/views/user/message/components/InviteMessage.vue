@@ -5,7 +5,7 @@
             您收到了一条来自
             <el-popover :width="225">
                 <template #reference>
-                    <el-link>{{ messageData.creater?.nickname }}</el-link>
+                    <el-link>{{ messageData.creater?.nickName }}</el-link>
                 </template>
                 <div class="option-item">
                     <el-collapse style="width:100%">
@@ -26,12 +26,12 @@
             的团队——
             <el-popover :width="225">
                 <template #reference>
-                    <el-link>{{ messageData.groupname }}</el-link>
+                    <el-link>{{ messageData.groupName }}</el-link>
                 </template>
                 <div class="option-item">
                     <img :src="messageData.logoUrl ? messageData.logoUrl : 'src/assets/team.png'"
-                        :alt="messageData.groupname" width="25">
-                    <span>{{ messageData.groupname }}</span>
+                        :alt="messageData.groupName" width="25">
+                    <span>{{ messageData.groupName }}</span>
                     <!-- <span>已有{{ data?.team.member?.length }}名成员</span> -->
                 </div>
             </el-popover>
@@ -67,11 +67,11 @@ watch(route, () => {
         if (item.id == route.params.Mid) {
             messageData.value = item
             userInfo({
-                isteacher: 0,
-                userid: item.createrid
+                isTeacher: 0,
+                userid: item.createrId
             })
                 .then(res => {
-                    messageData.value.creater = res.data.data
+                    messageData.value.creater = res.data
                 })
                 .catch(err => console.log(err))
 
@@ -83,11 +83,11 @@ watch(route, () => {
     })
 const handleAccept = () => {
     handleInvite({
-        groupid: messageData.value.id,
+        groupId: messageData.value.id,
         status: 1
     }, messageData.value.id)
         .then(res => {
-            if (res.data.code === 200) {
+            if (res.code === 200) {
                 ElMessage.success('您已同意加入该团队')
                 emit('getData')
             }
@@ -100,11 +100,11 @@ const handleAccept = () => {
 }
 const handleRefuse = () => {
     handleInvite({
-        groupid: messageData.value.id,
+        groupId: messageData.value.id,
         status: 0
     }, messageData.value.id)
         .then(res => {
-            if (res.data.code === 200) {
+            if (res.code === 200) {
                 ElMessage.warning('您已拒绝加入该团队')
                 emit('getData')
             }

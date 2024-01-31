@@ -17,8 +17,8 @@ const guidedTeamData = ref([])
 const getData = () => {
     joinedTeams()
         .then(res => {
-            if (res.data.code === 200) {
-                guidedTeamData.value = res.data.data
+            if (res.code === 200) {
+                guidedTeamData.value = res.data
                 loading.value = false
             }
         })

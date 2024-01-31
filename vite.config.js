@@ -10,6 +10,7 @@ export default defineConfig(({ mode, command }) => {
     base: VITE_APP_ENV === "production" ? "./" : "/",
     plugins: [vue()],
     server: {
+      open: true,
       proxy: {
         "/api": {
           target: "http://140.143.139.167:8002",

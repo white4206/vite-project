@@ -10,11 +10,11 @@
             <template #dropdown>
                 <el-dropdown-menu>
                     <el-dropdown-item :icon="Avatar" disabled>
-                        {{ memberData?.leader.membername }}
+                        {{ memberData?.leader.memberName }}
                     </el-dropdown-item>
                     <el-dropdown-item v-for="(item, index) in  memberData?.members" :icon="User" divided
                         :command="item.userid">
-                        {{ item.membername }}
+                        {{ item.memberName }}
                     </el-dropdown-item>
                 </el-dropdown-menu>
             </template>
@@ -51,7 +51,7 @@ const handleCommand = (id) => {
         .then(() => {
             changeManager(props.id, id)
                 .then(res => {
-                    if (res.data.code === 200) {
+                    if (res.code === 200) {
                         getTeamMember()
                         ElMessage.success('变更队长成功')
                         cancelEdit('', 'changeCaptain')

@@ -1,18 +1,20 @@
 <template>
-    <el-card class="login-box">
-        <el-row justify="center" align="middle">
-            <el-col :span="12">
-                <div class="grid-content">
-                    <LoginImg></LoginImg>
-                </div>
-            </el-col>
-            <el-col :span="10">
-                <div class="grid-content LoginForm">
-                    <LoginForm></LoginForm>
-                </div>
-            </el-col>
-        </el-row>
-    </el-card>
+    <el-main>
+        <el-card class="login-box">
+            <el-row justify="center" align="middle">
+                <el-col :span="12">
+                    <div class="grid-content">
+                        <LoginImg></LoginImg>
+                    </div>
+                </el-col>
+                <el-col :span="10">
+                    <div class="grid-content LoginForm">
+                        <LoginForm></LoginForm>
+                    </div>
+                </el-col>
+            </el-row>
+        </el-card>
+    </el-main>
 </template>
   
 <script setup>

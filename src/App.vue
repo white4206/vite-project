@@ -4,10 +4,11 @@
       <el-header>
         <Navbar></Navbar>
       </el-header>
-      <el-main style="min-height: 500px;">
+      <div style="min-height: 750px;">
         <router-view></router-view>
-      </el-main>
-      <el-footer style="margin-top: 200px;">
+        <el-backtop :bottom="100"/>
+      </div>
+      <el-footer>
         <Bottom></Bottom>
       </el-footer>
     </el-container>
@@ -19,5 +20,4 @@ import Bottom from "./components/Bottom/index.vue"
 import Navbar from "./components/Navbar/index.vue"
 </script>
 
-<style lang="scss" scoped>
-</style>
+<style lang="scss" scoped></style>

@@ -42,9 +42,9 @@ const memberData = ref({
 const getData = () => {
     joinedTeamDetail(props?.id)
         .then(res => {
-            if (res.data.code === 200) {
-                memberData.value.teacher = res.data.data.guider
-                res.data.data.stumember.map(item => {
+            if (res.code === 200) {
+                memberData.value.teacher = res.data.guider
+                res.data.stumember.map(item => {
                     if (item.manager === 1)
                         memberData.value.leader = item
                     else

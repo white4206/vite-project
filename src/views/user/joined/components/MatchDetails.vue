@@ -18,23 +18,23 @@
                         <el-table ref="multipleTableRef" :data="filterTableData" style="width: 100%"
                             @selection-change="handleSelectionChange" stripe v-loading="loading">
                             <el-table-column type="selection" width="55" />
-                            <el-table-column property="matchname" label="比赛名" width="120" />
-                            <el-table-column property="signtime" label="报名时间" width="120">
+                            <el-table-column property="matchName" label="比赛名" width="120" />
+                            <el-table-column property="signTime" label="报名时间" width="120">
                                 <template #default="scope">
-                                    <div>{{ scope.row.signtime?.split(' ')[0] }}</div>
+                                    <div>{{ scope.row.signTime?.split(' ')[0] }}</div>
                                 </template>
                             </el-table-column>
-                            <el-table-column property="ispass" label="报名状态" width="120">
+                            <el-table-column property="isPass" label="报名状态" width="120">
                                 <template #default="scope">
-                                    <div> <el-tag :type="signUpStateType(scope.row.ispass)">{{
-                                        signUpState(scope.row.ispass)
+                                    <div> <el-tag :type="signUpStateType(scope.row.isPass)">{{
+                                        signUpState(scope.row.isPass)
                                     }}</el-tag></div>
                                 </template>
                             </el-table-column>
                             <el-table-column label="报名附件" show-overflow-tooltip>
                                 <template #default="scope">
                                     <el-link :icon="Link" :underline="true" target="_blank"
-                                        :href="'http://140.143.139.167' + scope.row.signfile">{{ scope.row.filename
+                                        :href="'http://140.143.139.167' + scope.row.signFile">{{ scope.row.filename
                                         }}</el-link>
                                 </template>
                             </el-table-column>
@@ -73,8 +73,8 @@ const tableData = ref([])
 const getData = () => {
     signUpDetail(props?.id)
         .then(res => {
-            if (res.data.code === 200) {
-                tableData.value = res.data.data
+            if (res.code === 200) {
+                tableData.value = res.data
                 loading.value = false
             }
         })
@@ -83,24 +83,24 @@ const getData = () => {
 onMounted(() => {
     getData()
 })
-const signUpState = (ispass) => {
-    if (ispass === -1)
+const signUpState = (isPass) => {
+    if (isPass === -1)
         return '审核失败'
-    else if (ispass === 0)
+    else if (isPass === 0)
         return '教师审核中'
-    else if (ispass === 1)
+    else if (isPass === 1)
         return '管理员审核中'
-    else if (ispass === 2)
+    else if (isPass === 2)
         return '报名成功'
 }
-const signUpStateType = (ispass) => {
-    if (ispass === -1)
+const signUpStateType = (isPass) => {
+    if (isPass === -1)
         return 'danger'
-    else if (ispass === 0)
+    else if (isPass === 0)
         return ''
-    else if (ispass === 1)
+    else if (isPass === 1)
         return ''
-    else if (ispass === 2)
+    else if (isPass === 2)
         return 'success'
 }
 
@@ -109,7 +109,7 @@ const filterTableData = computed(() =>
     tableData.value?.filter(
         (data) =>
             !search.value ||
-            data.matchname.toLowerCase().includes(search.value.toLowerCase())
+            data.matchName.toLowerCase().includes(search.value.toLowerCase())
     )
 )
 

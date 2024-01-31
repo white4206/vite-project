@@ -65,17 +65,17 @@ const form = reactive({
 const submitCreate = () => {
     formRef.value?.validate().then(res => {
         createTeam({
-            groupname: form.name
+            groupName: form.name
         })
             .then(res => {
-                if (res.data.code === 200) {
+                if (res.code === 200) {
                     ElMessage.success('创建成功')
                     emit('isShow')
                     formRef.value?.resetFields()
                     emit('getData')
                 }
-                else if (res.data.code === 0)
-                    ElMessage.warning(res.data.data)
+                else if (res.code === 0)
+                    ElMessage.warning(res.data)
             })
             .catch(err => {
                 console.log(err)

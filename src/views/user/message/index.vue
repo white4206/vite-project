@@ -41,10 +41,10 @@ const messageData = ref()
 const isShowMessageLogo = ref(false)
 const loading = ref(true)
 const getData = () => {
-    inviteMessage(store.role === '1' ? 'group' : 'teacher')
+    inviteMessage(store.GET_ROLE() === '1' ? 'group' : 'teacher')
         .then(res => {
-            if (res.data.code === 200) {
-                messageData.value = res.data.data
+            if (res.code === 200) {
+                messageData.value = res.data
                 loading.value = false
             }
         })

@@ -7,9 +7,9 @@
                 </el-icon>
                 <span>团队管理 </span>
             </template>
-            <el-menu-item index="/user/created" v-if="store.role === '1'">我创建的</el-menu-item>
-            <el-menu-item index="/user/joined" v-if="store.role === '1'">我加入的</el-menu-item>
-            <el-menu-item index="/user/guided" v-if="store.role === '2'">我指导的</el-menu-item>
+            <el-menu-item index="/user/created" v-if="store.GET_ROLE() === '1'">我创建的</el-menu-item>
+            <el-menu-item index="/user/joined" v-if="store.GET_ROLE() === '1'">我加入的</el-menu-item>
+            <el-menu-item index="/user/guided" v-if="store.GET_ROLE() === '2'">我指导的</el-menu-item>
         </el-sub-menu>
         <el-menu-item index="/user/message">
             <el-icon>

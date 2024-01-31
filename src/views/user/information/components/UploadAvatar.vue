@@ -36,8 +36,8 @@ const loading = ref(true)
 onMounted(() => {
     getHeadImg()
         .then(res => {
-            if (res.data.code === 200) {
-                if (res.data.data.length === 0)
+            if (res.code === 200) {
+                if (res.data === null)
                     uploadFiles.value = [
                         {
                             status: "ready",
@@ -48,7 +48,7 @@ onMounted(() => {
                     uploadFiles.value = [
                         {
                             status: "ready",
-                            url: 'http://140.143.139.167' + res.data.data,
+                            url: 'http://140.143.139.167' + res.data,
                         }
                     ]
                 loading.value = false
@@ -75,7 +75,7 @@ const handleChange = (rawFile, rawFileList) => {
         formData.append("headimg", rawFile.raw)
         changeHeadImg(formData)
             .then(res => {
-                if (res.data.code === 200) {
+                if (res.code === 200) {
                     uploadFiles.value = [rawFile]
                     ElMessage.success('更换头像成功')
                     store.reloadAvatar()

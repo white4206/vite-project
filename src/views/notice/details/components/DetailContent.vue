@@ -4,7 +4,7 @@
             <el-row justify="center">
                 <el-col :span="18">
                     <div class="text-title-box">
-                        <h1>{{ data?.info.infotitle }}</h1>
+                        <h1>{{ data?.info.infoTitle }}</h1>
                     </div>
                 </el-col>
             </el-row>
@@ -22,10 +22,10 @@
                     </span>
                 </div>
                 <div class="content-text">
-                    {{ data?.info.infocontent }}
+                    {{ data?.info.infoContent }}
                     <div style="text-align: center;margin: 20px 0;" v-for="item in data?.images">
-                        <img :src="'http://140.143.139.167' + item.imgurl" :alt="item.imgname" style="width:800px;">
-                        <div> {{ item.imgname }}</div>
+                        <img :src="'http://140.143.139.167' + item.imgUrl" :alt="item.imgName" style="width:800px;">
+                        <div> {{ item.imgName }}</div>
                     </div>
                 </div>
                 <div class="content-title" v-if="true">
@@ -40,7 +40,7 @@
                 </div>
                 <div class="content-attachments">
                     <div v-for="item in data?.files">
-                        <el-link :icon="Link" :underline="true">{{ item.filename }}</el-link>
+                        <el-link :icon="Link" :underline="true">{{ item.fileName }}</el-link>
                     </div>
                 </div>
             </div>

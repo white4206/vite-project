@@ -6,7 +6,18 @@
                     <el-form-item label="用户头像" prop="name">
                         <UploadAvatar></UploadAvatar>
                     </el-form-item>
+                    <el-form-item label="获奖信息" prop="prizeInfo">
+                        <el-tag size="large" round hit @click="viewAwardRecord" class="tag-button" type="primary">
+                            <div style="display: flex;align-items: center;">
+                                查看获奖记录
+                                <el-icon>
+                                    <ArrowRightBold />
+                                </el-icon>
+                            </div>
+                        </el-tag>
+                    </el-form-item>
                 </el-form>
+                <AwardRecord v-model="isViewAward"></AwardRecord>
             </div>
         </el-col>
         <el-col :span="15">
@@ -20,6 +31,13 @@
 <script setup>
 import SelfInformation from './components/SelfInformation.vue';
 import UploadAvatar from './components/UploadAvatar.vue';
+import AwardRecord from './components/AwardRecord.vue';
+import { ref } from 'vue'
+
+const isViewAward = ref(false)
+const viewAwardRecord = () => {
+    isViewAward.value = true
+}
 </script>
 
 <style lang="scss" scoped>
@@ -49,6 +67,17 @@ import UploadAvatar from './components/UploadAvatar.vue';
     padding: 20px;
     border-radius: 15px;
     background-color: #FFFFFF;
+}
+
+.tag-button {
+    transition: .4s;
+}
+
+.tag-button:hover {
+    cursor: pointer;
+    transform: translate(10px);
+    background-color: #ffffff;
+    transition: .4s;
 }
 </style>
   

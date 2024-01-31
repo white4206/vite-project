@@ -29,4 +29,10 @@ const getInfo = () => {
     method: "get",
   });
 };
-export { changeInfo, changeHeadImg, getHeadImg, getInfo };
+const getPersonalAwards = () => {
+  return service.request({
+    url: `award/personalAwards`,
+    method: "get",
+  });
+};
+export { changeInfo, changeHeadImg, getHeadImg, getInfo, getPersonalAwards };

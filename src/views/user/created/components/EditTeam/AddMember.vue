@@ -34,10 +34,10 @@ const handleSearch = () => {
             username: form.studentNumber
         })
             .then(res => {
-                if (res.data.code === 200)
+                if (res.code === 200)
                     ElMessage.success('邀请发送成功')
-                if (res.data.code === 0)
-                    ElMessage.warning('邀请待同意或' + res.data.data)
+                if (res.code === 0)
+                    ElMessage.warning('邀请待同意或' + res.data)
                 getTeamMember()
             })
             .catch(err => console.log(err))

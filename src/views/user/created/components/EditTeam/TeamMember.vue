@@ -9,11 +9,11 @@
                 </div>
                 <div>
                     <div style="padding-bottom: 5px;">
-                        <span style="padding-right:10px">{{ filterMemberData.leader.membername }}</span>
+                        <span style="padding-right:10px">{{ filterMemberData.leader.memberName }}</span>
                         <el-tag class="leader-tag" type="danger">队长</el-tag>
-                        <span class="small-text">{{ filterMemberData.leader.membercollege }}</span>
+                        <span class="small-text">{{ filterMemberData.leader.memberCollege }}</span>
                     </div>
-                    <div class="small-text">{{ filterMemberData.leader.membermajor }}</div>
+                    <div class="small-text">{{ filterMemberData.leader.memberMajor }}</div>
                 </div>
                 <ChangeCaptain :memberData="filterMemberData" :id="id"></ChangeCaptain>
             </span>
@@ -30,11 +30,11 @@
                         </div>
                         <div>
                             <div style="padding-bottom: 5px;">
-                                <span style="padding-right: 10px;">{{ item.membername }}</span>
+                                <span style="padding-right: 10px;">{{ item.memberName }}</span>
                                 <el-tag class="member-tag" type="success">成员</el-tag>
                             </div>
                             <!-- <div class="small-text">{{ item.membercollege }}</div> -->
-                            <div class="small-text">{{ item.membermajor }}</div>
+                            <div class="small-text">{{ item.memberMajor }}</div>
                         </div>
                         <div class="close-icon" @click="handleDeleteMember(item.userid)">
                             <el-icon>
@@ -81,7 +81,7 @@ const getTeamData = inject("getData")
 const handleDeleteMember = (id) => {
     deleteMember(props.id, id)
         .then(res => {
-            if (res.data.code === 200)
+            if (res.code === 200)
                 ElMessage.success('成员变动成功')
             getTeamData()
         })

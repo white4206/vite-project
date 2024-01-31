@@ -2,7 +2,7 @@
     <SelfInfoSkeleton :loading="loading">
         <el-form ref="formRef" :model="form" label-width="120px" label-position="left" :rules="rules" status-icon
             :size="formSize" require-asterisk-position="right">
-            <el-form-item :label="store.role === '1' ? '学号' : '工号'" required>
+            <el-form-item :label="store.GET_ROLE() === '1' ? '学号' : '工号'" required>
                 <span class="text">{{ informationData?.username }}</span>
                 <span v-if="!isEdit" class="edit-button" @click="handleEdit">
                     <el-icon>
@@ -18,18 +18,18 @@
                 </span>
             </el-form-item>
             <el-form-item label="姓名" required>
-                <span class="text">{{ informationData?.nickname }}</span>
+                <span class="text">{{ informationData?.nickName }}</span>
             </el-form-item>
             <el-form-item label="学院" required>
                 <span class="text">{{ informationData?.college }}</span>
             </el-form-item>
-            <el-form-item label="专业" required v-if="store.role === '1'">
+            <el-form-item label="专业" required v-if="store.GET_ROLE() === '1'">
                 <span class="text">{{ informationData?.major }}</span>
             </el-form-item>
-            <el-form-item label="年级" required v-if="store.role === '1'">
+            <el-form-item label="年级" required v-if="store.GET_ROLE() === '1'">
                 <span class="text">{{ informationData?.grade }}</span>
             </el-form-item>
-            <el-form-item label="班级" required v-if="store.role === '1'">
+            <el-form-item label="班级" required v-if="store.GET_ROLE() === '1'">
                 <span class="text">{{ informationData?.cla + '班' }}</span>
             </el-form-item>
             <el-form-item label="手机号" prop="tel">
@@ -39,6 +39,10 @@
             <el-form-item label="电子邮箱" prop="email">
                 <span v-if="!isEdit" class="text">{{ form.email }}</span>
                 <el-input v-if="isEdit" v-model="form.email" />
+            </el-form-item>
+            <el-form-item label="银行卡号" prop="bandCard">
+                <span v-if="!isEdit" class="text">{{ form.bandCard }}</span>
+                <el-input v-if="isEdit" v-model="form.bandCard" />
             </el-form-item>
             <el-form-item>
                 <el-button v-if="isEdit" type="primary" @click="submitEdit">保存</el-button>
@@ -61,7 +65,7 @@ const store = useLoginStore()
 const loading = ref(true)
 const informationData = ref({
     username: '',
-    nickname: '',
+    nickName: '',
     major: '',
     college: '',
     grade: '',
@@ -70,10 +74,11 @@ const informationData = ref({
 const getData = () => {
     getInfo()
         .then(res => {
-            if (res.data.code === 200) {
-                informationData.value = res.data.data
-                form.email = res.data.data.email
-                form.tel = res.data.data.tel
+            if (res.code === 200) {
+                informationData.value = res.data
+                form.email = res.data.email
+                form.tel = res.data.tel
+                form.bandCard = res.data.bandcard
                 loading.value = false
             }
         })
@@ -86,6 +91,7 @@ const router = useRouter()
 const form = reactive({
     tel: '',
     email: '',
+    bandCard: ''
 })
 const formRef = ref()
 const phoneNumberValidator = (rule, value, callback) => {
@@ -114,10 +120,11 @@ const handleChangePassword = () => {
 const submitEdit = () => {
     changeInfo({
         email: form.email,
-        tel: form.tel
+        tel: form.tel,
+        bandcard: form.bandCard
     })
         .then(res => {
-            if (res.data.code === 200) {
+            if (res.code === 200) {
                 isEdit.value = false
                 loading.value = true
                 getData()

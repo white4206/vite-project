@@ -31,8 +31,8 @@ const noticeData = ref()
 const getData = () => {
     getDetails(route.params.Nid)
         .then(res => {
-            if (res.data.code === 200) {
-                noticeData.value = res.data.data
+            if (res.code === 200) {
+                noticeData.value = res.data
                 loading.value = false
             }
         })

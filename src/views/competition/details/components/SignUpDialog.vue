@@ -10,11 +10,11 @@
                     </template>
                     <el-select v-model="form.team" value-key="id" placeholder="请选择团队" size="large" :filterable="true"
                         no-match-text="未找到您的团队" no-data-text="您还没有自己的团队" :clearable="true">
-                        <el-option v-for="(item, index) in teamData" :key="item.id" :label="item.groupname" :value="item">
+                        <el-option v-for="(item, index) in teamData" :key="item.id" :label="item.groupName" :value="item">
                             <div class="option-item">
-                                <img :src="item?.logoUrl ? item?.logoUrl : 'src/assets/team.png'" :alt="item.groupname"
+                                <img :src="item?.logoUrl ? item?.logoUrl : 'src/assets/team.png'" :alt="item.groupName"
                                     width="25">
-                                <span>{{ item.groupname }}</span>
+                                <span>{{ item.groupName }}</span>
                             </div>
                         </el-option>
                         <template #prefix>
@@ -66,11 +66,11 @@ const props = defineProps({
 const teamData = ref()
 const emit = defineEmits(['update:modelValue'])
 onMounted(() => {
-    if (store.role === '1') {
+    if (store.GET_ROLE() === '1') {
         createdTeams()
             .then(res => {
-                if (res.data.code === 200)
-                    teamData.value = res.data.data
+                if (res.code === 200)
+                    teamData.value = res.data
             })
             .catch(err => {
                 console.log(err)
@@ -92,15 +92,15 @@ const formRef = ref()
 const handleSignUp = () => {
     let formData = new FormData()
     formData.append("file", uploadFiles.value[0].raw)
-    formData.append('groupid', form.value.team.id)
+    formData.append('groupId', form.value.team.id)
     teamSignUp(route.params.Cid.split('&')[0], formData)
         .then(res => {
             emit('update:modelValue', false)
             formRef.value.resetFields()
-            if (res.data.data === '报名成功，等待审核')
-                ElMessage.success(res.data.data)
-            else if (res.data.data === '无法重复报名')
-                ElMessage.warning(res.data.data)
+            if (res.data === '报名成功，等待审核')
+                ElMessage.success(res.data)
+            else if (res.data === '无法重复报名')
+                ElMessage.warning(res.data)
         })
         .catch(err => {
             console.log(err)

@@ -65,8 +65,8 @@ const teamName = ref()
 const getTeamMember = () => {
     teamMember(props.id)
         .then(res => {
-            if (res.data.code === 200)
-                memberData.value = res.data.data
+            if (res.code === 200)
+                memberData.value = res.data
         })
         .catch(err => [
             console.log(err)
@@ -75,8 +75,8 @@ const getTeamMember = () => {
 const getTeamTeacher = () => {
     teamTeacher(props.id)
         .then(res => {
-            if (res.data.code === 200)
-                teacherData.value = res.data.data
+            if (res.code === 200)
+                teacherData.value = res.data
         })
         .catch(err => [
             console.log(err)

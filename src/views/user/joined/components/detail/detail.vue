@@ -17,8 +17,8 @@
                 <el-col :span="24" v-if="JSON.stringify(signUpDetailList) !== '[]'">
                     <h3>报名状态:</h3>
                     <div v-for="(item, index) in  signUpDetailList">
-                        <div style="margin-top: 20px;padding-left:75px;">{{ matchDetailList[index].match.matchname }}
-                            <el-tag effect="plain" :type="signUpStateType(item.ispass)">{{ signUpState(item.ispass)
+                        <div style="margin-top: 20px;padding-left:75px;">{{ matchDetailList[index].match.matchName }}
+                            <el-tag effect="plain" :type="signUpStateType(item.isPass)">{{ signUpState(item.isPass)
                             }}</el-tag>
                         </div>
                     </div>
@@ -52,32 +52,32 @@ const memberData = ref({
 })
 const signUpDetailList = ref([])
 const matchDetailList = ref([])
-const signUpState = (ispass) => {
-    if (ispass === -1)
+const signUpState = (isPass) => {
+    if (isPass === -1)
         return '审核失败'
-    else if (ispass === 0)
+    else if (isPass === 0)
         return '等待老师审核'
-    else if (ispass === 1)
+    else if (isPass === 1)
         return '等待竞赛管理员审核'
-    else if (ispass === 2)
+    else if (isPass === 2)
         return '报名成功'
 }
-const signUpStateType = (ispass) => {
-    if (ispass === -1)
+const signUpStateType = (isPass) => {
+    if (isPass === -1)
         return 'error'
-    else if (ispass === 0)
+    else if (isPass === 0)
         return 'primary'
-    else if (ispass === 1)
+    else if (isPass === 1)
         return 'primary'
-    else if (ispass === 2)
+    else if (isPass === 2)
         return 'success'
 }
 const getData = () => {
     joinedTeamDetail(props?.id)
         .then(res => {
-            if (res.data.code === 200) {
-                memberData.value.teacher = res.data.data.guider
-                res.data.data.stumember.map(item => {
+            if (res.code === 200) {
+                memberData.value.teacher = res.data.guider
+                res.data.stumember.map(item => {
                     if (item.manager === 1)
                         memberData.value.leader = item
                     else

@@ -6,10 +6,16 @@ const getNotices = (pagenum) => {
     method: "get",
   });
 };
+const getNoticesByType = (pagenum, infoType) => {
+  return service.request({
+    url: `/info/searchInfoByType/${pagenum}/${infoType}`,
+    method: "get",
+  });
+};
 const getDetails = (id) => {
   return service.request({
     url: `/info/search/${id}`,
     method: "get",
   });
 };
-export { getNotices, getDetails };
+export { getNotices, getDetails, getNoticesByType };
