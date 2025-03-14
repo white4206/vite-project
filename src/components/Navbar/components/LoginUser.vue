@@ -9,6 +9,12 @@
       </el-icon>
       <span>个人中心</span>
     </el-menu-item>
+    <!--    <el-menu-item index="/analyze">-->
+    <!--      <el-icon>-->
+    <!--        <Histogram />-->
+    <!--      </el-icon>-->
+    <!--      <span>我的分析</span>-->
+    <!--    </el-menu-item>-->
     <el-menu-item index="/apply">
       <el-icon>
         <Document/>

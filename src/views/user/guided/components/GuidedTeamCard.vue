@@ -3,7 +3,7 @@
         <template #header>
             <div class="card-header">
                 <span class="card-header-title">
-                    <span><img :src="data?.logoUrl ? data?.logoUrl : 'src/assets/team.png'" :alt="data?.groupName"
+                    <span><img :src="'http://140.143.139.167:/springboot/file/head-img/团队logo.jpg'" :alt="data?.groupName"
                             width="25"></span>
                     {{ data?.groupName }}
                 </span>
@@ -42,6 +42,7 @@ import MatchDetails from './MatchDetails.vue'
 import AwardRecord from './AwardRecord.vue'
 import Detail from './Detail/Detail.vue';
 import { ref } from 'vue'
+import {ArrowRightBold} from '@element-plus/icons-vue'
 
 const props = defineProps({
     data: {

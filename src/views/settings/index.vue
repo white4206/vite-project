@@ -2,7 +2,7 @@
   <el-main>
     <el-row justify="center">
       <el-col :span="18">
-        <el-card class="changePassword-box">
+        <el-card class="changePassword-box" shadow="never">
           <template #header>用户账号密码修改</template>
           <el-steps class="steps-box" :active="activeStep" finish-status="success" align-center>
             <el-step title="验证身份"/>

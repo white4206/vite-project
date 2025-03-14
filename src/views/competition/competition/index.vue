@@ -1,7 +1,7 @@
 <template>
   <el-main>
     <el-row justify="space-around" style="margin-bottom: 20px">
-      <el-col :span="18">
+      <el-col :span="22">
         <div class="grid-content">
           <Swiper></Swiper>
         </div>
@@ -22,7 +22,7 @@
           </template>
           <CompetitionList/>
         </el-card>
-        <el-tabs v-else v-model="activeName" class="demo-tabs" @tab-click="handleClick">
+        <el-tabs v-else v-model="activeName" class="demo-tabs">
           <el-tab-pane label="竞赛列表" name="competition">
             <CompetitionList/>
           </el-tab-pane>

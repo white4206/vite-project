@@ -21,16 +21,11 @@
         <NoticeContentSkeleton :loading="loading">
           <div class="table-box">
             <el-table :data="filterNoticeList" :show-overflow-tooltip="true"
-                      @row-click="handleClick($event)" :default-sort="{ prop: 'date', order: 'ascending' }" stripe
+                      @row-click="handleClick($event)" :default-sort="{ prop: 'createTime', order: 'descending' }"
+                      stripe
                       empty-text="未查询到相关公告信息">
               <el-table-column prop="infoTitle" label="公告名称"/>
-              <el-table-column prop="createTime" sortable label="日期" align="center" width="95">
-                <template #default="scope">
-                  <div class="date-text">
-                    {{ scope.row.createTime }}
-                  </div>
-                </template>
-              </el-table-column>
+              <el-table-column prop="createTime" sortable label="日期" align="center" width="110"/>
             </el-table>
           </div>
         </NoticeContentSkeleton>
@@ -39,7 +34,8 @@
     <el-row justify="center" :gutter="20" class="content">
       <el-col :span="24">
         <el-card class="pagination-card" shadow="never">
-          <el-pagination layout="prev, pager, next" :pager-count="9" :default-page-size="10" :total="totalCount"
+          <el-pagination background layout="prev, pager, next" :pager-count="9" :default-page-size="10"
+                         :total="totalCount"
                          v-model:current-page="currentPage" @update:current-page="handlePageChange"/>
         </el-card>
       </el-col>
@@ -116,7 +112,7 @@ const handlePageChange = () => {
 </script>
 
 <style lang="scss" scoped>
-::v-deep .el-table__row {
+:deep(.el-table__row) {
   cursor: pointer;
 }
 

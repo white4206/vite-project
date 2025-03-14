@@ -1,5 +1,5 @@
 <template>
-    <el-dialog title="none" :show-close="true" :close-on-click-modal="false" :destroy-on-close="true" :align-center="true"
+    <el-dialog title="none" :show-close="true" :close-on-click-modal="false" :destroy-on-close="true" 
         :close-on-press-escape="false" style="border-radius: 15px;">
         <template #header="{ close, titleId, titleClass }">
             <div>
@@ -38,7 +38,7 @@ import { ref, onMounted } from 'vue'
 import TeamMember from './TeamMember.vue'
 import TeamTeacher from './TeamTeacher.vue';
 import { joinedTeamDetail } from '@/api/team.js'
-import { competitionsDetail } from '@/api/competitions.js'
+import { competitionsDetail } from '@/api/competition.js'
 
 const props = defineProps({
     id: {
@@ -84,6 +84,8 @@ const getData = () => {
                         memberData.value.member.push(item)
                 })
             }
+            console.log("成员")
+          console.log(memberData)
         })
         .catch(err => console.log(err))
 }

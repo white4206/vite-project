@@ -17,7 +17,7 @@
             <el-table-column label="报名附件">
               <template #default="scope">
                 <el-link :icon="Link" :underline="true" target="_blank"
-                         :href="'http://140.143.139.167' + scope.row.signfile">{{ scope.row.fileName }}
+                         :href="'http://140.143.139.167' + scope.row.signFile">{{ scope.row.fileName }}
                 </el-link>
               </template>
             </el-table-column>
@@ -70,9 +70,9 @@ const getData = () => {
             tableData.value.map(tableItem => {
               teamDetail(tableItem.groupId)
                   .then(res => {
-                    if (res.data.code === 200) {
-                      tableItem.gruopName = res.data.data.gruopName
-                      res.data.data.stumember.map(teamItem => {
+                    if (res.code === 200) {
+                      tableItem.gruopName = res.data.gruopName
+                      res.data.stumember.map(teamItem => {
                         if (teamItem.manager === 1) {
                           tableItem.leadername = teamItem.memberName
                         }
@@ -80,14 +80,11 @@ const getData = () => {
                       loading.value = false
                     }
                   })
-                  .catch(err => console.log(err))
             })
           else
             loading.value = false
-
         }
       })
-      .catch(err => console.log(err))
 }
 onMounted(() => {
   getData()

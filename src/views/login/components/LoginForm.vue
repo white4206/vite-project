@@ -61,9 +61,10 @@ const onSubmit = () => {
           ElMessage.warning('请检查学生登录或教师登录')
       })
       .catch(err => {
-        console.log(err)
-        if (err.response.status)
+        if (err.response.status === 403)
           ElMessage.error("账号或者密码错误")
+        else if (err.response.status === 500)
+          ElMessage.error("服务端错误,请联系管理员")
       })
 }
 const whichUser = ref(true)

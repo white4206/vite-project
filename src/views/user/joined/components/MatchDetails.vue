@@ -1,6 +1,6 @@
 <template>
     <el-dialog title="none" width="80%" :show-close="true" :close-on-click-modal="false" :destroy-on-close="true"
-        :align-center="true" :close-on-press-escape="false" style="border-radius: 15px;">
+        :close-on-press-escape="false" style="border-radius: 15px;">
         <template #header="{ close, titleId, titleClass }">
             <div>
                 <h4 :id="titleId" :class="titleClass">参赛信息</h4>

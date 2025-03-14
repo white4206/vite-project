@@ -1,6 +1,6 @@
 <template>
   <el-card class="card" shadow="hover">
-    <img :src="'/src/assets/noticeImg.png'" :alt="data?.infoTitle" class="image"/>
+    <img src="@/assets/notFound.jpg" :alt="data?.infoTitle" class="image"/>
     <div class="card-title-box">
       <div class="card-title">
         {{ data?.infoTitle }}
@@ -19,8 +19,8 @@ const props = defineProps({
 </script>
 
 <style lang="scss" scoped>
-::v-deep .el-card__body {
-  padding: 0px;
+.card:deep(.el-card__body) {
+  padding: 0;
 }
 
 .image {

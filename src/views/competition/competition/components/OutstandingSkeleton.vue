@@ -1,9 +1,9 @@
 <template>
   <el-skeleton style="width: 100%" animated>
     <template #template>
-      <div v-for="item in 5" :key="item.id" class="recommended-author">
-        <div class="recommended-author-info">
-          <div class="recommended-author-img-box">
+      <div v-for="item in 5" :key="item.id" class="outstanding-student">
+        <div class="outstanding-student-info">
+          <div class="outstanding-student-img-box">
             <el-skeleton-item class="skeleton-title-item" variant="image"/>
           </div>
           <div class="skeleton-content-box">
@@ -39,17 +39,17 @@
   margin-bottom: 10px;
 }
 
-.recommended-author {
+.outstanding-student {
   padding: 0 10px;
   margin-bottom: 20px;
   cursor: pointer;
 }
 
-.recommended-author-info {
+.outstanding-student-info {
   display: flex;
 }
 
-.recommended-author-img-box {
+.outstanding-student-img-box {
   width: 45px;
   height: 45px;
   margin-right: 10px;

@@ -8,7 +8,7 @@
             </div>
             <template #tip>
                 <div class="el-upload__tip">
-                    上传文件大小不可超过xxmb
+                    上传文件大小不可超过50mb
                 </div>
             </template>
         </el-upload>

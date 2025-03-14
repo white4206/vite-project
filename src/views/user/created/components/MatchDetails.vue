@@ -1,6 +1,6 @@
 <template>
     <el-dialog title="none" width="80%" :show-close="true" :close-on-click-modal="false" :destroy-on-close="true"
-        :align-center="true" :close-on-press-escape="false" style="border-radius: 15px;">
+         :close-on-press-escape="false" style="border-radius: 15px;">
         <template #header="{ close, titleId, titleClass }">
             <div>
                 <h4 :id="titleId" :class="titleClass">参赛信息</h4>
@@ -35,7 +35,7 @@
                             <el-table-column label="报名附件" show-overflow-tooltip>
                                 <template #default="scope">
                                     <el-link :icon="Link" :underline="true" target="_blank"
-                                        :href="'http://140.143.139.167' + scope.row.signfile">{{ scope.row.fileName
+                                        :href="'http://140.143.139.167' + scope.row.signFile">{{ scope.row.fileName
                                         }}</el-link>
                                 </template>
                             </el-table-column>
@@ -145,9 +145,12 @@ const handleCancel = (signId) => {
 }
 const uploadFiles = ref([])
 const uploadRef = ref()
-const signId = ref()
+const sign = ref()
 const handleReUpload = (signId) => {
-    signId.value = signId
+  console.log("222222")
+  console.log(signId)
+    sign.value = signId
+  console.log(sign.value)
 
 }
 const handleChange = (rawFile, rawFileList) => {
@@ -156,9 +159,11 @@ const handleChange = (rawFile, rawFileList) => {
     }
     uploadFiles.value = rawFileList
     let formData = new FormData()
+  console.log("-------------")
+  console.log(sign.value)
     formData.append("file", uploadFiles.value[0].raw)
     console.log(formData.get('file'))
-    reSignUp(signId.value, formData)
+    reSignUp(sign.value, formData)
         .then(res => {
             if (res.code === 200) {
                 ElMessage.success('重新上传文件成功')

@@ -36,7 +36,7 @@
                             <!-- <div class="small-text">{{ item.membercollege }}</div> -->
                             <div class="small-text">{{ item.memberMajor }}</div>
                         </div>
-                        <div class="close-icon" @click="handleDeleteMember(item.userid)">
+                        <div class="close-icon" @click="handleDeleteMember(item.userId)">
                             <el-icon>
                                 <Close />
                             </el-icon>

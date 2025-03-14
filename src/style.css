@@ -14,6 +14,7 @@
 
 html,
 body {
+    color: #303133;
     height: 100%;
     background-color: #f2f3f5;
 }
@@ -23,7 +24,7 @@ ul {
 }
 
 ::-webkit-scrollbar {
-    width: 5px;
+    width: 8px;
 }
 
 ::-webkit-scrollbar-thumb {
@@ -38,6 +39,6 @@ ul {
 }
 
 .el-main {
-    max-width: 1500px;
+    max-width: 1600px;
     margin: 0 auto;
 }

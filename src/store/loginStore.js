@@ -13,7 +13,7 @@ const useLoginStore = defineStore("isLogin", () => {
                     if (res.data === null)
                         avatarUrl.value =
                             "https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png";
-                    else avatarUrl.value = "http://140.143.139.167" + res.data.data;
+                    else avatarUrl.value = "http://140.143.139.167" + res.data;
                 }
             })
             .catch((err) => console.log(err));
@@ -25,7 +25,7 @@ const useLoginStore = defineStore("isLogin", () => {
         removeToken();
     };
     const SET_ROLE = (role) => {
-        setCookies("role", role, 60 * 60 * 100)
+        setCookies("role", role, 60 * 60 * 100) // 100小时过期
     }
     const GET_ROLE = () => {
         return getCookies("role")

@@ -53,6 +53,10 @@ const routes = [
         ],
     },
     {
+        path: "/analyze",
+        component: () => import("../views/analyze/index.vue")
+    },
+    {
         path: "/user",
         component: () => import("../views/user/index.vue"),
         children: [
@@ -100,6 +104,10 @@ const routes = [
     {
         path: "/settings",
         component: () => import("../views/settings/index.vue"),
+    },
+    {
+        path: "/help",
+        component: () => import("../views/help/index.vue")
     },
     {
         path: "/",

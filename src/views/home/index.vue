@@ -1,7 +1,7 @@
 <template>
-  <el-main>
-    <el-row justify="space-around">
-      <el-col :span="20">
+  <el-main style="padding: 0;">
+    <el-row justify="space-around" style="margin-bottom: 0">
+      <el-col :span="24">
         <div class="grid-content">
           <Swiper></Swiper>
         </div>
@@ -26,7 +26,7 @@
                 <el-carousel class="swiper-box" v-loading="false" trigger="click" height="200px"
                              indicator-position="none" style="border-radius: 5px">
                   <el-carousel-item v-for="item in hotSwiperList" :key="item.id">
-                    <HotCard :data="item"></HotCard>
+                    <HotCard :data="item" @click="handleGoToNotice(item.targetId)"></HotCard>
                   </el-carousel-item>
                 </el-carousel>
               </RecommendedSkeleton>
@@ -43,16 +43,11 @@
                 </div>
               </template>
               <NotificationSkeleton :loading="notificationLoading">
-                <el-table :show-header="false" :data="tableData" stripe @row-click="handleClick($event)"
-                          :show-overflow-tooltip="true" :default-sort="{ prop: 'date', order: 'ascending' }">
+                <el-table :show-header="false" :data="notifyUpdatesList" stripe
+                          @row-click="handleClickNotification($event)"
+                          :show-overflow-tooltip="true" :default-sort="{ prop: 'createTime', order: 'descending' }">
                   <el-table-column prop="infoTitle" label="通知公告"/>
-                  <el-table-column prop="createTime" sortable width="95" align="right">
-                    <template #default="scope">
-                      <div class="date-text">
-                        {{ scope.row.createTime }}
-                      </div>
-                    </template>
-                  </el-table-column>
+                  <el-table-column prop="createTime" sortable width="110" align="center"/>
                 </el-table>
               </NotificationSkeleton>
             </el-card>
@@ -73,15 +68,16 @@
           </template>
           <LinkCardSkeleton :loading="false">
             <el-row :gutter="20" justify="start">
-              <el-col :span="8" v-for="item in 5">
+              <el-col :span="8" v-for="item in linkCompetitionList">
                 <el-card shadow="never" class="linkCard">
                   <div class="container">
                     <div>
-                      <img src="/src/assets/notFound.jpg" alt="" style="width: 100%;height: 200px;border-radius: 5px">
+                      <img class="linkImage" :src="item.homeImage" alt=""
+                           style="width: 100%;height: 200px;border-radius: 5px" @click="handleLinkTo(item.url)">
                       <div class="title">
-                        <div class="title-text">{{ item.title + "" }}</div>
+                        <div class="title-text">{{ item.title }}</div>
                         <div class="title-content">
-                          {{ item.content + "" }}
+                          {{ item.content }}
                         </div>
                         <div class="title-bottom">
                           <span class="title-bottom-tag">省赛</span>
@@ -89,11 +85,11 @@
                             <el-icon>
                               <User/>
                             </el-icon>
-                            <span> {{ '参赛人数 ' + 1023 }}</span>
+                            <span> {{ '参赛人数 ' + '...' }}</span>
                             <el-icon>
                               <OfficeBuilding/>
                             </el-icon>
-                            <span>{{ '覆盖院校 ' + 13 }}</span>
+                            <span>{{ '覆盖院校 ' + '...' }}</span>
                           </div>
                         </div>
                       </div>
@@ -115,39 +111,68 @@ import HotCard from './components/HotCard.vue'
 import Swiper from './components/Swiper.vue';
 import {BottomRight, User, OfficeBuilding} from '@element-plus/icons-vue'
 import {ref, onMounted} from 'vue'
-import {getAllPush, getNotifyUpdates} from '@/api/home.js'
+import {getAllPush, getLinkCompetition, getNotifyUpdates} from '@/api/home.js'
 import RecommendedSkeleton from "@/views/home/components/RecommendedSkeleton.vue";
 import NotificationSkeleton from "@/views/home/components/NotificationSkeleton.vue";
+import {useRouter} from "vue-router";
 
-const tableData = ref([])
+const router = useRouter()
 const loading = ref(true)
 const linkLoading = ref(true)
 const notificationLoading = ref(false)
 const recommendedLoading = ref(true)
-
 const hotSwiperList = ref([])
 const notifyUpdatesList = ref([])
+const linkCompetitionList = ref([])
 
+const handleLinkTo = (url) => {
+  window.open(url)
+}
+const handleClickNotification = (row) => {
+  router.push(`/notice/details/${row.id}`)
+}
+const handleGoToNotice=(targetId)=>{
+  router.push(`/notice/details/${targetId}`)
+}
 onMounted(() => {
   getAllPush().then(res => {
-    console.log(res)
-    hotSwiperList.value = res.data
+    hotSwiperList.value = res.data.map(item => {
+      return {
+        ...item,
+        headImage: import.meta.env.VITE_BASE_URL + item.headImage
+      }
+    })
     recommendedLoading.value = false
   })
   getNotifyUpdates().then(res => {
-    console.log(res)
-    table.value = res.data
+    notifyUpdatesList.value = res.data.map(item => {
+      return {
+        ...item,
+        createTime: item.createTime.split(' ')[0]
+      }
+    }).sort((a, b) => {
+      return Date.parse(b.createTime) - Date.parse(a.createTime)
+    })
     linkLoading.value = false
   })
-  for (let i = 1; i <= 5; i++) {
-    tableData.value.push({
-      infoTitle: "我是标题...",
-      createTime: "2024-01-01"
+  getLinkCompetition().then(res => {
+    linkCompetitionList.value = res.data.map(item => {
+      return {
+        ...item,
+        homeImage: import.meta.env.VITE_BASE_URL + item.homeImage
+      }
     })
-  }
+  })
 })
 </script>
 <style lang="scss" scoped>
+.el-main{
+  max-width: none;
+}
+:deep(.cell) {
+  cursor: pointer;
+}
+
 .el-row {
   margin-bottom: 20px;
 }
@@ -171,6 +196,16 @@ onMounted(() => {
 
 .linkCard {
   margin-bottom: 20px;
+  transition: .4s;
+}
+
+.linkImage:hover {
+  cursor: pointer;
+}
+
+.linkCard:hover .linkImage {
+  scale: 1.05;
+  transition: .4s;
 }
 
 .linkCard:deep(.el-card__body) {
@@ -195,6 +230,7 @@ onMounted(() => {
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     margin-bottom: 10px;
+    min-height: 40px;
   }
 
   .title-bottom {
